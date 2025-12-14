@@ -1,7 +1,6 @@
 package com.document.management.config;
 
 import com.document.management.model.User;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -23,6 +22,11 @@ public class JwtUtil {
     }
 
     public String generateToken(User user) {
+        String companyName = null;
+        if (user.getCompany() != null) {
+            companyName = user.getCompany().getName();
+        }
+
         return Jwts.builder()
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().getName())

@@ -11,7 +11,6 @@ import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.UserRepository;
 import com.document.management.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 

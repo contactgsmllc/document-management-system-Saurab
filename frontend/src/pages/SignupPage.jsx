@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
+import api from "../api/axios";
 
 function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +17,6 @@ function SignupPage() {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
 
-  const baseUrl = "http://localhost:8080"; // Change this to your actual base URL
 
   // Fetch companies from API
   useEffect(() => {
@@ -24,25 +24,26 @@ function SignupPage() {
   }, []);
 
   const fetchCompanies = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${baseUrl}/api/users/companies`);
+  try {
+    setLoading(true);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch companies");
-      }
+    const { data } = await api.get("/api/users/companies");
 
-      const data = await response.json();
-      setCompanies(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-      setErrors({
-        general: "Failed to load companies. Please refresh the page.",
-      });
-      setLoading(false);
-    }
-  };
+    setCompanies(data);
+    setLoading(false);
+
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+
+    setErrors({
+      general:
+        error.response?.data?.message ||
+        "Failed to load companies. Please refresh the page.",
+    });
+
+    setLoading(false);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,62 +94,55 @@ function SignupPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (validateForm()) {
-      setSubmitting(true);
+  if (validateForm()) {
+    setSubmitting(true);
 
-      // Prepare data for API
-      const userData = {
-        email: formData.email,
-        password: formData.password,
-        companyId: parseInt(formData.companyId),
-        roleId: 2, // USER role
-      };
+    // Prepare data for API
+    const userData = {
+      email: formData.email,
+      password: formData.password,
+      companyId: parseInt(formData.companyId),
+      roleId: 2, // USER role
+    };
 
-      try {
-        const response = await fetch(`${baseUrl}/api/users/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
+    try {
+      const resp = await api.post("/api/users/register", userData);
 
-        const data = await response.json();
+      const data = resp.data;
 
-        if (!response.ok) {
-          throw new Error(data.message || "Registration failed");
-        }
+      // Success
+      console.log("Registration successful:", data);
+      setSuccessMessage(
+        `Account created successfully! Welcome, ${data.email}. Redirecting to login...`
+      );
 
-        // Success
-        console.log("Registration successful:", data);
-        setSuccessMessage(
-          `Account created successfully! Welcome, ${data.email}. Redirecting to login...`
-        );
+      // Reset form
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        companyId: "",
+      });
 
-        // Reset form
-        setFormData({
-          email: "",
-          password: "",
-          confirmPassword: "",
-          companyId: "",
-        });
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
 
-        // Redirect to login after 2 seconds
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000);
-      } catch (error) {
-        console.error("Registration error:", error);
-        setErrors({
-          general: error.message || "Registration failed. Please try again.",
-        });
-      } finally {
-        setSubmitting(false);
-      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setErrors({
+        general: error.response?.data?.message || 
+                 error.message || 
+                 "Registration failed. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">

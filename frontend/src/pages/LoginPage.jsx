@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import api from "../api/axios.js";
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +13,6 @@ function LoginPage() {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
 
-  const baseUrl = "http://localhost:8080"; // adjust if backend is different
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -34,67 +34,59 @@ function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setLoading(true);
+  e.preventDefault();
+  if (!validateForm()) return;
+  setLoading(true);
 
-    try {
-      const resp = await fetch(`${baseUrl}/api/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+  try {
+    const resp = await api.post("/api/users/login", {
+      email: formData.email,
+      password: formData.password,
+    });
 
-      const data = await resp.json();
-      console.log("LOGIN RESPONSE RAW:", resp, data);
+    const data = resp.data;
+    console.log("LOGIN RESPONSE RAW:", resp, data);
 
-      if (!resp.ok) throw new Error(data.message || "Login failed");
+    // Extract token from any possible backend key
+    const token = data.token || data.authToken || data.accessToken;
+    const role = data.role ?? data.userRole ?? data.roleName;
 
-      // IMPORTANT: unify keys here
-      const token = data.token || data.authToken || data.accessToken;
-      const role = data.role ?? data.userRole ?? data.roleName; // support few variations
+    console.log("Parsed token, role:", { token, role, fullData: data });
 
-      console.log("Parsed token, role:", { token, role, fullData: data });
-
-      if (!token) {
-        console.warn(
-          "No token found in login response - check backend response keys"
-        );
-      }
-
-      // Save into localStorage under consistent keys
-      if (token) localStorage.setItem("authToken", token);
-      if (role) localStorage.setItem("userRole", role);
-      localStorage.setItem("userData", JSON.stringify(data));
-
-      console.log("LocalStorage after set:", {
-        authToken: localStorage.getItem("authToken"),
-        userRole: localStorage.getItem("userRole"),
-        userData: JSON.parse(localStorage.getItem("userData") || "null"),
-      });
-
-      setSuccessMessage("Login successful — redirecting...");
-
-      // Redirect immediately (window.location is safest for forcing route change)
-      // Redirect based on role
-      if (role === "SUPER_ADMIN") {
-        window.location.href = "/admin/dashboard";
-      } else if (role === "USER") {
-        window.location.href = "/user/dashboard";
-      } else {
-        // fallback
-        window.location.href = "/user/dashboard";
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setErrors({ general: err.message || "Invalid credentials" });
-    } finally {
-      setLoading(false);
+    if (!token) {
+      console.warn("No token found in login response - check backend keys");
     }
-  };
+
+    // Save credentials
+    if (token) localStorage.setItem("authToken", token);
+    if (role) localStorage.setItem("userRole", role);
+    localStorage.setItem("userData", JSON.stringify(data));
+
+    console.log("LocalStorage after set:", {
+      authToken: localStorage.getItem("authToken"),
+      userRole: localStorage.getItem("userRole"),
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
+    });
+
+    setSuccessMessage("Login successful — redirecting...");
+
+    // Redirect by role
+    if (role === "SUPER_ADMIN") {
+      window.location.href = "/admin/dashboard";
+    } else if (role === "USER") {
+      window.location.href = "/user/dashboard";
+    } else {
+      window.location.href = "/user/dashboard"; // fallback
+    }
+
+  } catch (err) {
+    console.error("Login error:", err);
+    setErrors({ general: err.response?.data?.message || "Invalid credentials" });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

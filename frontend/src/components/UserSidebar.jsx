@@ -1,39 +1,17 @@
 import React from "react";
-import { Users, Building2, UserPlus, LogOut, Menu, X ,FileText} from "lucide-react";
+import { Upload, Folder, LogOut, X, Menu } from "lucide-react";
 
-const AdminSidebar = ({
-  activeTab,
-  setActiveTab,
-  pendingCount,
-  isOpen,
-  toggleSidebar,
-}) => {
+export default function Sidebar({ 
+  sidebarOpen, 
+  toggleSidebar, 
+  activeTab, 
+  setActiveTab, 
+  handleLogout 
+}) {
   const menuItems = [
-    {
-      id: "users",
-      label: "All Users",
-      icon: Users,
-    },
-    {
-      id: "pending",
-      label: "Pending Users",
-      icon: UserPlus,
-      badge: pendingCount,
-    },
-    {
-      id: "companies",
-      label: "Companies",
-      icon: Building2,
-    },
-    { id: "documents", label: "Documents", icon: FileText },
+    { id: "documents", label: "My Documents", icon: Folder },
+    { id: "upload", label: "Upload Files", icon: Upload },
   ];
-
-  const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem("authToken");
-      window.location.href = "/login";
-    }
-  };
 
   return (
     <>
@@ -42,11 +20,11 @@ const AdminSidebar = ({
         onClick={toggleSidebar}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* Overlay for mobile */}
-      {isOpen && (
+      {sidebarOpen && (
         <div
           onClick={toggleSidebar}
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
@@ -56,14 +34,14 @@ const AdminSidebar = ({
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 w-64`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-blue-900">Admin Panel</h2>
-            <p className="text-sm text-gray-500 mt-1">Manage your system</p>
+            <h2 className="text-xl font-bold text-blue-900">User Panel</h2>
+            <p className="text-sm text-gray-500 mt-1">Manage your files</p>
           </div>
 
           {/* Navigation */}
@@ -77,7 +55,6 @@ const AdminSidebar = ({
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
-                    // Close sidebar on mobile after selection
                     if (window.innerWidth < 1024) {
                       toggleSidebar();
                     }
@@ -92,17 +69,6 @@ const AdminSidebar = ({
                     <Icon size={20} />
                     <span>{item.label}</span>
                   </div>
-                  {item.badge > 0 && (
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        isActive
-                          ? "bg-white text-blue-900"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -122,6 +88,4 @@ const AdminSidebar = ({
       </aside>
     </>
   );
-};
-
-export default AdminSidebar;
+}

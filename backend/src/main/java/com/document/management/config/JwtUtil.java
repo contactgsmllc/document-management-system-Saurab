@@ -30,7 +30,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().getName())
-                .claim("companyName", user.getCompany().getName())
+                .claim("companyName", companyName)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day

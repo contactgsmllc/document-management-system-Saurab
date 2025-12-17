@@ -5,8 +5,10 @@ import com.document.management.model.Company;
 import com.document.management.model.Status;
 import com.document.management.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CompanyService {
@@ -34,6 +36,11 @@ public class CompanyService {
     public CompanyResponse getCompany(Long id) {
         Company company = companyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        if (company.getStatus() != Status.ACTIVE) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Company not found");
+        }
 
         CompanyResponse res = new CompanyResponse();
         res.setId(company.getId());

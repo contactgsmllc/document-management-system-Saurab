@@ -27,9 +27,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepo;
-    @Autowired private RoleRepository roleRepo;
-    @Autowired private CompanyRepository companyRepo;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private RoleRepository roleRepo;
+    @Autowired
+    private CompanyRepository companyRepo;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public UserResponse register(RegisterRequest req) {
 
@@ -58,7 +61,6 @@ public class UserService {
     }
 
 
-
     public LoginResponse login(LoginRequest req) {
         User user = userRepo.findByEmail(req.email).orElseThrow();
 
@@ -76,14 +78,14 @@ public class UserService {
     }
 
     public List<UserResponse> listUsers() {
-        return userRepo.findAllUsersOrderByCreatedAtDesc().stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(),u.isApproved(),u.getStatus()))
+        return userRepo.findAllUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
+                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus()))
                 .collect(Collectors.toList());
     }
 
     public List<UserResponse> listPendingUsers() {
-        return userRepo.findPendingUsersOrderByCreatedAtDesc().stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(),u.isApproved(),u.getStatus()))
+        return userRepo.findPendingUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
+                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus()))
                 .collect(Collectors.toList());
     }
 
@@ -110,31 +112,42 @@ public class UserService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Map entity -> DTO (do NOT expose password or sensitive fields)
-        return new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getRole(),
-                user.getCompany(),
-                user.isApproved(),
-                user.getStatus()
-        );
-    }
-    @Transactional
-    public void softDeleteUser(Long id) {
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setStatus(Status.INACTIVE);
-        userRepo.save(user);
-    }
-    @Transactional
-    public void hardDeleteUser(Long id) {
-        if (!userRepo.existsById(id)) {
-            throw new RuntimeException("User not found");
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "User not found");
         }
-        userRepo.deleteById(id);
+
+
+
+            // Map entity -> DTO (do NOT expose password or sensitive fields)
+            return new UserResponse(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getRole(),
+                    user.getCompany(),
+                    user.isApproved(),
+                    user.getStatus()
+            );
+
+
+        }
+
+        @Transactional
+        public void softDeleteUser (Long id){
+            User user = userRepo.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setStatus(Status.INACTIVE);
+            userRepo.save(user);
+        }
+        @Transactional
+        public void hardDeleteUser (Long id){
+            if (!userRepo.existsById(id)) {
+                throw new RuntimeException("User not found");
+            }
+            userRepo.deleteById(id);
+        }
+
+
     }
 
-
-}
 

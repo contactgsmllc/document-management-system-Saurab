@@ -36,16 +36,29 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userFilter, setUserFilter] = useState({ company: "", email: "" });
+  const [pendingFilter, setPendingFilter] = useState({
+    company: "",
+    email: "",
+  });
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsType, setDetailsType] = useState(""); // "user" | "company"
   const [detailsData, setDetailsData] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
 
-  const [pendingFilter, setPendingFilter] = useState({
-    company: "",
-    email: "",
-  });
   const itemsPerPage = 10;
+
+  const userRole = localStorage.getItem("role");
+const companyId = localStorage.getItem("companyId");
+
+
+  // Add status === "ACTIVE" filter as per instructions
+  const activeUsers = users.filter((user) => user.status === "ACTIVE");
+  const activePendingUsers = pendingUsers.filter(
+    (user) => user.status === "ACTIVE"
+  );
+  const activeCompanies = companies.filter(
+    (company) => company.status === "ACTIVE"
+  );
 
   const showUserDetails = async (userId) => {
     setDetailsType("user");
@@ -79,10 +92,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const authHeaders = {
-    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-    "Content-Type": "application/json",
-  };
   const [companyForm, setCompanyForm] = useState({
     name: "",
     address: "",
@@ -94,6 +103,7 @@ const AdminDashboard = () => {
     phone: "",
     einNumber: "",
   });
+
   const [userForm, setUserForm] = useState({
     email: "",
     password: "",
@@ -106,24 +116,32 @@ const AdminDashboard = () => {
     fetchPendingUsers();
   }, []);
 
+  // Adjust page when data or tab changes
   useEffect(() => {
     const items =
       activeTab === "users"
-        ? users
+        ? activeUsers
         : activeTab === "pending"
-        ? pendingUsers
+        ? activePendingUsers
         : activeTab === "companies"
-        ? companies
+        ? activeCompanies
         : [];
     const total = Math.ceil(items.length / itemsPerPage);
     if (currentPage > total && total > 0) {
       setCurrentPage(total);
     }
-  }, [users, pendingUsers, companies, activeTab, currentPage]);
+  }, [
+    users,
+    pendingUsers,
+    companies,
+    activeTab,
+    currentPage,
+    userFilter,
+    pendingFilter,
+  ]);
 
   const fetchCompanies = async () => {
     setLoading(true);
-
     try {
       const { data } = await api.get("/api/users/companies");
       setCompanies(data);
@@ -142,7 +160,6 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
-
     try {
       const { data } = await api.get("/api/users");
       setUsers(data);
@@ -161,23 +178,22 @@ const AdminDashboard = () => {
 
   const fetchPendingUsers = async () => {
     setLoading(true);
-
     try {
       const { data } = await api.get("/admin/users/pending");
       setPendingUsers(data);
     } catch (error) {
       console.error("Fetch pending users error:", error);
+      alert("Failed to fetch pending users");
     } finally {
       setLoading(false);
     }
   };
 
-  const isUserPending = (userId) => pendingUsers.some((u) => u.id === userId);
+  const isUserPending = (userId) =>
+    activePendingUsers.some((u) => u.id === userId);
 
   const createCompany = async () => {
-    if (!companyForm.name.trim()) {
-      return alert("Company name is required");
-    }
+    if (!companyForm.name.trim()) return alert("Company name is required");
 
     try {
       await api.post("/admin/companies", {
@@ -192,7 +208,6 @@ const AdminDashboard = () => {
         einNumber: companyForm.einNumber.trim(),
       });
 
-      // Reset form
       setCompanyForm({
         name: "",
         address: "",
@@ -204,12 +219,10 @@ const AdminDashboard = () => {
         phone: "",
         einNumber: "",
       });
-
       setShowModal(false);
       await fetchCompanies();
       alert("Company created successfully!");
     } catch (error) {
-      console.error("Create company error:", error);
       alert(
         "Failed to create company: " +
           (error.response?.data?.message || error.message)
@@ -235,44 +248,34 @@ const AdminDashboard = () => {
 
       setUserForm({ email: "", password: "", companyId: "" });
       setShowModal(false);
-
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
-
       alert("User created successfully!");
     } catch (error) {
       alert("Failed to create user");
-      console.error("Create user error:", error);
+      console.error(error);
     }
   };
 
   const toggleApproval = async (userId, approve) => {
-    if (!approve) {
-      // This should only happen from All Users tab (disapprove approved user)
-      if (
-        !window.confirm(
-          "Are you sure you want to disapprove this user and send them back to pending?"
-        )
-      ) {
-        return;
-      }
-    }
+    const confirmMsg = approve
+      ? "Are you sure you want to approve this user?"
+      : "Are you sure you want to disapprove this user and send them back to pending?";
+
+    if (!window.confirm(confirmMsg)) return;
 
     try {
       await api.put(`/admin/users/${userId}/approve`, null, {
         params: { approve },
       });
-
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
-
       alert(
         approve
           ? "User approved successfully!"
           : "User disapproved and moved to pending!"
       );
     } catch (error) {
-      console.error("Approval error:", error);
       alert(
-        "Failed to update approval status. " +
+        "Failed to update approval status: " +
           (error.response?.data?.message || "")
       );
     }
@@ -283,51 +286,38 @@ const AdminDashboard = () => {
 
     try {
       await api.delete(`/admin/users/${userId}`);
-
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
       alert("User deleted successfully!");
     } catch (error) {
       alert("Failed to delete user");
-      console.error("Delete user error:", error);
     }
   };
 
   const deleteCompany = async (companyId) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this company? All associated users will be affected."
-      )
-    )
+    if (!window.confirm("Are you sure you want to delete this company?"))
       return;
 
     try {
       await api.delete(`/admin/companies/${companyId}`);
-
-      await Promise.all([fetchCompanies(), fetchUsers(), fetchPendingUsers()]);
+      await fetchCompanies();
       alert("Company deleted successfully!");
     } catch (error) {
       alert("Failed to delete company");
-      console.error("Delete company error:", error);
     }
   };
 
   const updateCompany = async () => {
-    if (!companyForm.name.trim()) return alert("Please enter company name");
+    if (!companyForm.name.trim()) return alert("Company name is required");
 
     try {
       await api.put(`/admin/companies/${selectedItem.id}`, {
-        name: companyForm.name,
+        name: companyForm.name.trim(),
       });
-
       setShowModal(false);
-      setCompanyForm({ name: "" });
-      setSelectedItem(null);
-
       await fetchCompanies();
       alert("Company updated successfully!");
     } catch (error) {
       alert("Failed to update company");
-      console.error("Update company error:", error);
     }
   };
 
@@ -339,19 +329,14 @@ const AdminDashboard = () => {
       email: userForm.email.trim(),
       companyId: parseInt(userForm.companyId),
     };
-
-    if (userForm.password?.trim()) {
-      payload.password = userForm.password.trim();
-    }
+    if (userForm.password?.trim()) payload.password = userForm.password.trim();
 
     try {
       await api.put(`/admin/users/${selectedItem.id}`, payload);
-
       closeModal();
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
       alert("User updated successfully!");
     } catch (error) {
-      console.error("Update user error:", error);
       alert("Failed to update user");
     }
   };
@@ -360,7 +345,7 @@ const AdminDashboard = () => {
     setModalType(type);
     setSelectedItem(item);
     if (type === "editCompany" && item) {
-      setCompanyForm({ name: item.name });
+      setCompanyForm({ ...companyForm, name: item.name });
     } else if ((type === "createUser" || type === "editUser") && item) {
       setUserForm({
         email: item.email,
@@ -369,6 +354,18 @@ const AdminDashboard = () => {
       });
     } else if (type === "createUser") {
       setUserForm({ email: "", password: "", companyId: "" });
+    } else if (type === "createCompany") {
+      setCompanyForm({
+        name: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        contact_person: "",
+        email: "",
+        phone: "",
+        einNumber: "",
+      });
     }
     setShowModal(true);
   };
@@ -377,7 +374,17 @@ const AdminDashboard = () => {
     setShowModal(false);
     setModalType("");
     setSelectedItem(null);
-    setCompanyForm({ name: "" });
+    setCompanyForm({
+      name: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      contact_person: "",
+      email: "",
+      phone: "",
+      einNumber: "",
+    });
     setUserForm({ email: "", password: "", companyId: "" });
   };
 
@@ -395,27 +402,6 @@ const AdminDashboard = () => {
 
   const totalPages = (items) => Math.ceil(items.length / itemsPerPage);
 
-  const getCurrentItems = () => {
-    if (activeTab === "users") return getFilteredUsers();
-    if (activeTab === "pending") return getFilteredPendingUsers();
-    if (activeTab === "companies") return companies;
-    return [];
-  };
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const menuItems = [
-    { id: "users", label: "All Users", icon: Users },
-    {
-      id: "pending",
-      label: "Pending Users",
-      icon: UserPlus,
-      badge: pendingUsers.length,
-    },
-    { id: "companies", label: "Companies", icon: Building2 },
-    { id: "documents", label: "Documents", icon: FileText },
-  ];
-
-  // function to filter users based on company and email
   const filterUsers = (userList, filter) => {
     return userList.filter((user) => {
       const matchesCompany = filter.company
@@ -428,9 +414,30 @@ const AdminDashboard = () => {
     });
   };
 
-  const getFilteredUsers = () => filterUsers(users, userFilter);
+  const getFilteredUsers = () => filterUsers(activeUsers, userFilter);
   const getFilteredPendingUsers = () =>
-    filterUsers(pendingUsers, pendingFilter);
+    filterUsers(activePendingUsers, pendingFilter);
+
+  const getCurrentItems = () => {
+    if (activeTab === "users") return getFilteredUsers();
+    if (activeTab === "pending") return getFilteredPendingUsers();
+    if (activeTab === "companies") return activeCompanies;
+    return [];
+  };
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const menuItems = [
+    { id: "users", label: "All Users", icon: Users },
+    {
+      id: "pending",
+      label: "Pending Users",
+      icon: UserPlus,
+      badge: activePendingUsers.length,
+    },
+    { id: "companies", label: "Companies", icon: Building2 },
+    { id: "documents", label: "Documents", icon: FileText },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -554,7 +561,7 @@ const AdminDashboard = () => {
             )}
           </div>
 
-          {/* ADD THIS ENTIRE FILTER SECTION HERE - START */}
+          {/* Filter Section */}
           {(activeTab === "users" || activeTab === "pending") && (
             <div className="mb-4 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -582,7 +589,7 @@ const AdminDashboard = () => {
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900"
                   >
                     <option value="">All Companies</option>
-                    {companies.map((company) => (
+                    {activeCompanies.map((company) => (
                       <option key={company.id} value={company.id}>
                         {company.name}
                       </option>
@@ -643,7 +650,7 @@ const AdminDashboard = () => {
                 {/* Users Tab */}
                 {activeTab === "users" && (
                   <div className="overflow-x-auto">
-                    {users.length === 0 ? (
+                    {activeUsers.length === 0 ? (
                       <div className="p-12 text-center text-gray-500">
                         No users found
                       </div>
@@ -732,7 +739,7 @@ const AdminDashboard = () => {
                                   <button
                                     onClick={() => deleteUser(user.id)}
                                     className="text-red-600 hover:text-red-800"
-                                    title="Delete user" 
+                                    title="Delete user"
                                   >
                                     <Trash2 size={16} />
                                   </button>
@@ -749,7 +756,7 @@ const AdminDashboard = () => {
                 {/* Pending Tab */}
                 {activeTab === "pending" && (
                   <div className="overflow-x-auto">
-                    {pendingUsers.length === 0 ? (
+                    {activePendingUsers.length === 0 ? (
                       <div className="p-12 text-center text-gray-500">
                         No pending users
                       </div>
@@ -816,7 +823,7 @@ const AdminDashboard = () => {
                 {/* Companies Tab */}
                 {activeTab === "companies" && (
                   <div className="overflow-x-auto">
-                    {companies.length === 0 ? (
+                    {activeCompanies.length === 0 ? (
                       <div className="p-12 text-center text-gray-500">
                         No companies found
                       </div>
@@ -833,7 +840,7 @@ const AdminDashboard = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {paginate(companies).map((company) => (
+                          {paginate(activeCompanies).map((company) => (
                             <tr key={company.id} className="hover:bg-gray-50">
                               <td className="pl-8 py-4">
                                 <button
@@ -871,7 +878,7 @@ const AdminDashboard = () => {
                 )}
                 {activeTab === "documents" && (
                   <div>
-                    <DocumentManager role="SUPER_ADMIN" />
+                    <DocumentManager role={userRole} companyId={companyId} />
                   </div>
                 )}
 
@@ -1211,7 +1218,7 @@ const AdminDashboard = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
                     >
                       <option value="">Select a company</option>
-                      {companies.map((company) => (
+                      {activeCompanies.map((company) => (
                         <option key={company.id} value={company.id}>
                           {company.name}
                         </option>

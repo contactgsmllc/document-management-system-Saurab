@@ -49,8 +49,7 @@ export default function DocumentManager({ role, companyId }) {
   const fetchUsers = async () => {
     try {
       const res = await api.get("/api/users/companies");
-      const data = await res.json();
-      setUsers(data);
+      setUsers(res.data); // ✅ FIX
     } catch (error) {
       console.error("Failed to fetch users", error);
     }
@@ -99,11 +98,7 @@ export default function DocumentManager({ role, companyId }) {
         const form = new FormData();
         form.append("file", file);
 
-        await api.post(`/api/companies/${selectedCompany}/documents`, form, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await api.post(`/api/companies/${selectedCompany}/documents`, form);
       }
 
       fetchDocuments();
@@ -118,64 +113,60 @@ export default function DocumentManager({ role, companyId }) {
   };
   // Delete document
   const deleteDoc = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this document?"))
-    return;
+    if (!window.confirm("Are you sure you want to delete this document?"))
+      return;
 
-  try {
-    await api.delete(`/api/companies/${selectedCompany}/documents/${id}`);
-    
-    setDocuments((docs) => docs.filter((doc) => doc.id !== id));
-    alert("Document deleted successfully!");
-  } catch (error) {
-    alert("Failed to delete document");
-    console.error("Delete document error:", error);
-  }
-};
+    try {
+      await api.delete(`/api/companies/${selectedCompany}/documents/${id}`);
 
+      setDocuments((docs) => docs.filter((doc) => doc.id !== id));
+      alert("Document deleted successfully!");
+    } catch (error) {
+      alert("Failed to delete document");
+      console.error("Delete document error:", error);
+    }
+  };
 
   // Preview document
   const previewDoc = async (doc) => {
-  try {
-    const res = await api.get(
-      `/api/companies/${selectedCompany}/documents/${doc.id}`,
-      {
-        responseType: "blob", // important for files
-      }
-    );
+    try {
+      const res = await api.get(
+        `/api/companies/${selectedCompany}/documents/${doc.id}`,
+        {
+          responseType: "blob", // important for files
+        }
+      );
 
-    const url = URL.createObjectURL(res.data);
-    setPreview({ url, name: doc.filename });
-
-  } catch (error) {
-    alert("Failed to preview document");
-    console.error("Preview document error:", error);
-  }
-};
-
+      const url = URL.createObjectURL(res.data);
+      setPreview({ url, name: doc.filename });
+    } catch (error) {
+      alert("Failed to preview document");
+      console.error("Preview document error:", error);
+    }
+  };
 
   // Download document
   const downloadDoc = async (doc) => {
-  try {
-    const res = await api.get(
-      `/api/companies/${selectedCompany}/documents/${doc.id}`,
-      {
-        responseType: "blob", // Very important for file downloads
-      }
-    );
+    try {
+      const res = await api.get(
+        `/api/companies/${selectedCompany}/documents/${doc.id}`,
+        {
+          responseType: "blob", // Very important for file downloads
+        }
+      );
 
-    const url = URL.createObjectURL(res.data);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = doc.filename;
-    link.click();
+      const url = URL.createObjectURL(res.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = doc.filename;
+      link.click();
 
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    alert("Failed to download document");
-    console.error("Download document error:", error);
-  }
-};
-
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Failed to download document");
+      console.error("Download document error:", error);
+    }
+  };
 
   // Format date to readable string
   const formatDate = (dateString) => {

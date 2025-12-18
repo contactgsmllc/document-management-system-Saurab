@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     List<User> findByApprovedFalse();
+  
     @Query("""
        SELECT u 
        FROM User u 
@@ -29,4 +30,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
        """)
     List<User> findAllUsersByStatusOrderByCreatedAtDesc(Status status);
 
+    @Query("SELECT u FROM User u WHERE u.approved = false ORDER BY u.createdAt DESC")
+    List<User> findPendingUsersOrderByCreatedAtDesc();
+    @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")
+    List<User> findAllUsersOrderByCreatedAtDesc();
+    boolean existsByEmail(String email);
 }

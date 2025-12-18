@@ -6,6 +6,7 @@ import com.document.management.dto.LoginResponse;
 import com.document.management.dto.RegisterRequest;
 import com.document.management.dto.UserResponse;
 import com.document.management.model.Company;
+import com.document.management.model.Status;
 import com.document.management.model.User;
 import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.UserRepository;
@@ -53,7 +54,7 @@ public class UserController {
 
     @GetMapping("/companies")
     public List<Company> listCompanies() {
-        return companyRepo.findAllCompaniesOrderByCreatedAtDesc();
+        return companyRepo.findByStatusOrderByCreatedAtDesc(Status.ACTIVE);
     }
 
     @GetMapping

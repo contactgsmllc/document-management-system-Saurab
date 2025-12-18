@@ -34,8 +34,8 @@ public class UserAdminController {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @GetMapping
-    public List<User> listUsers() {
-        return userRepo.findAllUsersOrderByCreatedAtDesc();
+    public List<UserResponse> listUsers() {
+        return userService.listUsers();
     }
 
     @PostMapping
@@ -73,8 +73,9 @@ public class UserAdminController {
     }
 
     @GetMapping("/pending")
-    public List<User> listPendingUsers() {
-        return userRepo.findPendingUsersOrderByCreatedAtDesc();
+    public List<UserResponse> listPendingUsers() {
+
+        return userService.listPendingUsers();
     }
 
     @PutMapping("/{id}/approve")

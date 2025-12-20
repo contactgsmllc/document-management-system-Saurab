@@ -22,9 +22,12 @@ public class JwtUtil {
     }
 
     public String generateToken(User user) {
+
         String companyName = null;
-        if (user.getCompany() != null) {
-            companyName = user.getCompany().getName();
+        if ("SUPER_ADMIN".equals(user.getRole().getName().name())) {
+            if (user.getCompany() != null) {
+                companyName = user.getCompany().getName();
+            }
         }
 
         return Jwts.builder()

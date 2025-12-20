@@ -23,16 +23,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     @Query("""
-       SELECT u 
-       FROM User u 
-       WHERE u.status = :status
-       ORDER BY u.createdAt DESC
-       """)
+   SELECT u
+   FROM User u
+   WHERE u.status = :status
+   AND u.role.name = USER
+   ORDER BY u.createdAt DESC
+   """)
     List<User> findAllUsersByStatusOrderByCreatedAtDesc(Status status);
 
-    @Query("SELECT u FROM User u WHERE u.approved = false ORDER BY u.createdAt DESC")
-    List<User> findPendingUsersOrderByCreatedAtDesc();
-    @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")
-    List<User> findAllUsersOrderByCreatedAtDesc();
+
     boolean existsByEmail(String email);
 }

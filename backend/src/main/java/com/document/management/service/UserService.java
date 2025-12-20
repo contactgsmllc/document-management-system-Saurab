@@ -62,20 +62,33 @@ public class UserService {
 
 
     public LoginResponse login(LoginRequest req) {
-        User user = userRepo.findByEmail(req.email).orElseThrow();
+        User user = userRepo.findByEmail(req.email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // MUST check approval
         if (!user.isApproved()) {
             throw new RuntimeException("User is not approved by admin yet");
         }
-
         if (!new BCryptPasswordEncoder().matches(req.password, user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
-
+        if (user.getRole().getName() == RoleType.USER && user.getCompany() == null) {
+            throw new RuntimeException("USER must be associated with a company");
+        }
         String roleName = user.getRole().getName().name();
-        return new LoginResponse(jwtUtil.generateToken(user), roleName);
+        Long userId = user.getId();
+        Long companyId = null;
+        if (user.getCompany() != null) {
+            companyId = user.getCompany().getId();
+        }
+        return new LoginResponse(
+                jwtUtil.generateToken(user),
+                roleName,
+                userId,
+                companyId
+        );
     }
+
 
     public List<UserResponse> listUsers() {
         return userRepo.findAllUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()

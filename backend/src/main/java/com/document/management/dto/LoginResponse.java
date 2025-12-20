@@ -4,10 +4,14 @@ public class LoginResponse {
 
         private String token;
         private String role;
+        private Long userId;
+        private Long companyId;
 
-        public LoginResponse(String token, String role) {
+        public LoginResponse(String token, String role ,Long userId, Long companyId) {
             this.token = token;
             this.role = role;
+            this.userId = userId;
+            this.companyId = companyId;
         }
 
         public String getToken() {
@@ -16,6 +20,14 @@ public class LoginResponse {
 
         public String getRole() {
             return role;
+        }
+
+        public Long getUserId() {
+        return userId;
+        }
+
+        public Long getCompanyId() {
+        return companyId;
         }
     }
 

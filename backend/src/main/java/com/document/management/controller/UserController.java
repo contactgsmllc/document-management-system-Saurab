@@ -12,6 +12,7 @@ import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.UserRepository;
 import com.document.management.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,18 +40,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest req) {
-        User user = repo.findByEmail(req.getEmail()).orElseThrow();
-
-        if (!user.isApproved()) {
-            throw new RuntimeException("User is not approved by admin yet");
-        }
-        if (encoder.matches(req.getPassword(), user.getPassword())) {
-            String roleName = user.getRole().getName().name();
-            return new LoginResponse(jwtUtil.generateToken(user), roleName);
-        }
-        throw new RuntimeException("Invalid credentials");
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
+        return ResponseEntity.ok(service.login(req));
     }
+
+
 
     @GetMapping("/companies")
     public List<Company> listCompanies() {

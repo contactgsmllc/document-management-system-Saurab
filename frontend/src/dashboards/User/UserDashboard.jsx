@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react"; 
+import React, { useEffect, useState, useCallback } from "react";
 import api from "../../api/axios.js";
 import {
   Upload,
@@ -13,53 +13,15 @@ import {
 } from "lucide-react";
 import Sidebar from "../../components/UserSidebar";
 
-
-const getAuthToken = () => {
-  try {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const parsed = JSON.parse(userData);
-      return parsed.token || null;
-    }
-  } catch (e) {
-    console.error("Error reading token:", e);
-  }
-  return null;
-};
-
-const getCompanyId = () => {
-  try {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const parsed = JSON.parse(userData);
-      return parsed.companyId || 1;
-    }
-  } catch (e) {
-    console.error("Error reading companyId:", e);
-  }
-  return 1;
-};
-
-const createApiClient = () => {
-  const token = getAuthToken();
-  return axios.create({
-    baseURL: BASE_URL,
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-      "Content-Type": "application/json"
-    }
-  });
-};
-
 const formatDateTime = (dateString) => {
   if (!dateString) return "—";
-  return new Date(dateString).toLocaleString('en-US', {
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric',
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true
+  return new Date(dateString).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 };
 
@@ -71,79 +33,92 @@ const formatFileSize = (bytes) => {
 };
 
 const getFileIcon = (contentType) => {
-  if (contentType?.includes('pdf')) return <FileText className="w-5 h-5 text-red-500" />;
-  if (contentType?.includes('image')) return <FileText className="w-5 h-5 text-blue-500" />;
-  if (contentType?.includes('excel') || contentType?.includes('sheet')) return <FileText className="w-5 h-5 text-green-500" />;
-  if (contentType?.includes('word') || contentType?.includes('document')) return <FileText className="w-5 h-5 text-blue-600" />;
+  if (contentType?.includes("pdf"))
+    return <FileText className="w-5 h-5 text-red-500" />;
+  if (contentType?.includes("image"))
+    return <FileText className="w-5 h-5 text-blue-500" />;
+  if (contentType?.includes("excel") || contentType?.includes("sheet"))
+    return <FileText className="w-5 h-5 text-green-500" />;
+  if (contentType?.includes("word") || contentType?.includes("document"))
+    return <FileText className="w-5 h-5 text-blue-600" />;
   return <FileText className="w-5 h-5 text-gray-500" />;
 };
 
-//  Main Component 
+//  Main Component
 
 export default function UserDashboard() {
   const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState(getCompanyId());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("documents");
   const [userEmailMap, setUserEmailMap] = useState({});
   const [userMapLoaded, setUserMapLoaded] = useState(false);
 
+
+
+  // Get companyId and userId from stored userData
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const companyId = userData.companyId;
+  const userId = userData.userId;
+
   // Fetch user map
   const fetchUserMap = useCallback(async () => {
-  try {
-    const response = await api.get(`/api/users`);
+    try {
+      const response = await api.get(`/api/users`);
 
-    if (response.data && Array.isArray(response.data)) {
-      const userMap = response.data.reduce((map, user) => {
-        map[user.id] = user.email || user.username || `User ID ${user.id}`;
-        return map;
-      }, {});
-      setUserEmailMap(userMap);
+      if (response.data && Array.isArray(response.data)) {
+        const userMap = response.data.reduce((map, user) => {
+          map[user.id] = user.email || user.username || `User ID ${user.id}`;
+          return map;
+        }, {});
+        setUserEmailMap(userMap);
+      }
+      setUserMapLoaded(true);
+    } catch (err) {
+      console.error("Failed to load user map:", err);
+      setUserMapLoaded(true);
     }
-    setUserMapLoaded(true);
-  } catch (err) {
-    console.error("Failed to load user map:", err);
-    setUserMapLoaded(true);
-  }
-}, []);
-
+  }, []);
 
   // Fetch documents
+  
   const fetchDocuments = useCallback(async () => {
-  if (!uploading) {
-    setLoading(true);
-  }
-  setError("");
+    if (!companyId) return; 
+    if (!uploading) {
+      setLoading(true);
+    }
+    setError("");
 
-  try {
-    const response = await api.get(`/api/companies/${selectedCompany}/documents`);
+    try {
+      const response = await api.get(
+        `/api/companies/${companyId}/documents`
+      );
 
-      
       if (response.data && Array.isArray(response.data)) {
-        let mappedData = response.data.map(doc => {
+        let mappedData = response.data.map((doc) => {
           const uploadedById = doc.uploadedBy || doc.user || 0;
-          
+
           return {
             id: doc.id,
             filename: doc.filename || doc.name,
             size: doc.size,
             contentType: doc.contentType,
-            uploadedBy: userEmailMap[uploadedById] || uploadedById || "Unknown User", 
+            uploadedBy:
+              userEmailMap[uploadedById] || uploadedById || "Unknown User",
             uploadedAt: doc.uploadedAt || doc.createdAt,
           };
         });
-        
+
         mappedData.sort((a, b) => {
           const dateA = new Date(a.uploadedAt).getTime();
           const dateB = new Date(b.uploadedAt).getTime();
-          return dateB - dateA; 
+          return dateB - dateA;
         });
-        
+
         setDocuments(mappedData);
       } else {
         setDocuments([]);
@@ -162,85 +137,55 @@ export default function UserDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCompany, userEmailMap, uploading]);
+  }, [companyId, userEmailMap, uploading]);
 
   useEffect(() => {
     fetchUserMap();
   }, [fetchUserMap]);
 
   useEffect(() => {
-    if (activeTab === "documents" && userMapLoaded) {
+    if (activeTab === "documents" && userMapLoaded && companyId) {
       fetchDocuments();
     }
-  }, [activeTab, userMapLoaded, fetchDocuments]); 
+  }, [activeTab, userMapLoaded, fetchDocuments]);
 
   const handleFileUpload = async (files) => {
-    if (!files || files.length === 0) return;
-    
+    if (!files || files.length === 0 || !companyId) return;
+
     setUploading(true);
     setError("");
 
     try {
-      uploadPromises.push(
-  api.post(`/api/companies/${selectedCompany}/documents`, formData, {
-    headers: { "Content-Type": "multipart/form-data" }
-  })
-);
-
-      const uploadPromises = []; 
+      const uploadPromises = [];
 
       for (const file of Array.from(files)) {
-        if (file.size > 50 * 1024 * 1024) {
-          alert(`${file.name} is too large (max 50MB)`);
-          continue;
-        }
-
-        const allowedTypes = [
-          'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-excel',
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'text/plain', 'text/csv',
-          'application/zip'
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
-          alert(`${file.name} has unsupported file type`);
-          continue;
-        }
-
         const formData = new FormData();
         formData.append("file", file);
-        
+
         uploadPromises.push(
-          api.post(`/api/companies/${selectedCompany}/documents`, formData, {
-            headers: { "Content-Type": "multipart/form-data" }
+          api.post(`/api/companies/${companyId}/documents`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
           })
         );
       }
 
       await Promise.all(uploadPromises);
-      await fetchDocuments(); 
-      alert("Files uploaded successfully!");
-      setActiveTab("documents"); 
-      
+      await fetchDocuments();
+      setActiveTab("documents");
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "One or more files failed to upload");
+      setError(err.response?.data?.message || "Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
   const deleteDocument = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this document?")) return;
+    if (!window.confirm("Are you sure you want to delete this document?"))
+      return;
     setError("");
     try {
-      
-      await api.delete(`/api/companies/${selectedCompany}/documents/${id}`);
-      setDocuments(prev => prev.filter(doc => doc.id !== id));
+      await api.delete(`/api/companies/${companyId}/documents/${id}`);
+      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
     } catch (err) {
       setError(err.response?.data?.message || "Delete failed");
     }
@@ -248,26 +193,33 @@ export default function UserDashboard() {
 
   const previewDocument = async (doc) => {
     setPreviewLoading(true);
-    setPreview({ name: doc.filename || doc.name || "Document", url: null, type: null }); 
+    setPreview({
+      name: doc.filename || doc.name || "Document",
+      url: null,
+      type: null,
+    });
     setError("");
 
     try {
-      
-      const response = await api.get(`/api/companies/${selectedCompany}/documents/${doc.id}`, {
-        responseType: "blob"
-      });
+      const response = await api.get(
+        `/api/companies/${companyId}/documents/${doc.id}`,
+        {
+          responseType: "blob",
+        }
+      );
       const blob = response.data;
-      const fileType = blob.type || doc.contentType || "application/octet-stream";
+      const fileType =
+        blob.type || doc.contentType || "application/octet-stream";
       const url = URL.createObjectURL(blob);
-      
+
       setPreview({
         name: doc.filename || doc.name || "Document",
         url: url,
-        type: fileType
+        type: fileType,
       });
     } catch (err) {
       setError(err.response?.data?.message || "Preview failed");
-      setPreview(null); 
+      setPreview(null);
     } finally {
       setPreviewLoading(false);
     }
@@ -276,10 +228,12 @@ export default function UserDashboard() {
   const downloadDocument = async (doc) => {
     setError("");
     try {
-      
-      const response = await api.get(`/api/companies/${selectedCompany}/documents/${doc.id}`, {
-        responseType: "blob"
-      });
+      const response = await api.get(
+        `/api/companies/${companyId}/documents/${doc.id}`,
+        {
+          responseType: "blob",
+        }
+      );
       const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -332,7 +286,7 @@ export default function UserDashboard() {
             <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
               <div className="flex justify-between items-center">
                 <span>{error}</span>
-                <button 
+                <button
                   onClick={() => setError("")}
                   className="text-red-500 hover:text-red-700"
                 >
@@ -348,9 +302,13 @@ export default function UserDashboard() {
               <div className="p-8">
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
                   <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Upload Documents</h3>
-                  <p className="text-gray-500 mb-6">Drag and drop files here, or click to browse</p>
-                  
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    Upload Documents
+                  </h3>
+                  <p className="text-gray-500 mb-6">
+                    Drag and drop files here, or click to browse
+                  </p>
+
                   <label className="inline-flex items-center px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-gray-800 cursor-pointer transition-colors">
                     <Upload className="w-5 h-5 mr-2" />
                     <span className="font-medium">Browse Files</span>
@@ -359,20 +317,23 @@ export default function UserDashboard() {
                       multiple
                       className="hidden"
                       onChange={(e) => handleFileUpload(e.target.files)}
-                      onClick={(e) => e.target.value = null}
+                      onClick={(e) => (e.target.value = null)}
                       accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip"
                     />
                   </label>
-                  
+
                   <p className="text-xs text-gray-500 mt-4">
-                    Max file size: 50MB • Supported: PDF, Images, Office files, TXT, CSV, ZIP
+                    Max file size: 50MB • Supported: PDF, Images, Office files,
+                    TXT, CSV, ZIP
                   </p>
                 </div>
 
                 {uploading && (
                   <div className="mt-6 bg-blue-50 p-4 rounded-lg flex items-center justify-center">
                     <Loader2 className="w-5 h-5 animate-spin text-blue-600 mr-3" />
-                    <span className="text-blue-700 font-medium">Uploading files...</span>
+                    <span className="text-blue-700 font-medium">
+                      Uploading files...
+                    </span>
                   </div>
                 )}
               </div>
@@ -382,16 +343,24 @@ export default function UserDashboard() {
           {/* Documents Tab */}
           {activeTab === "documents" && (
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-              {(loading || !userMapLoaded) ? (
+              {loading || !userMapLoaded ? (
                 <div className="p-12 text-center text-gray-500">
                   <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                  <p>{!userMapLoaded ? "Initializing..." : "Loading documents..."}</p>
+                  <p>
+                    {!userMapLoaded
+                      ? "Initializing..."
+                      : "Loading documents..."}
+                  </p>
                 </div>
               ) : documents.length === 0 ? (
                 <div className="p-12 text-center text-gray-500">
                   <Folder className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No documents found</h3>
-                  <p className="text-gray-500 mb-6">Upload your first document to get started</p>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    No documents found
+                  </h3>
+                  <p className="text-gray-500 mb-6">
+                    Upload your first document to get started
+                  </p>
                   <button
                     onClick={() => setActiveTab("upload")}
                     className="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
@@ -443,7 +412,10 @@ export default function UserDashboard() {
                           <td className="hidden lg:table-cell px-6 py-4 text-sm text-gray-600">
                             <div className="flex items-center gap-1">
                               <User className="w-3 h-3" />
-                              <span className="truncate max-w-[150px]" title={doc.uploadedBy}>
+                              <span
+                                className="truncate max-w-[150px]"
+                                title={doc.uploadedBy}
+                              >
                                 {doc.uploadedBy}
                               </span>
                             </div>
@@ -492,12 +464,14 @@ export default function UserDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-xl">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <h3 className="font-semibold text-gray-800 truncate">{preview.name}</h3>
+              <h3 className="font-semibold text-gray-800 truncate">
+                {preview.name}
+              </h3>
               <div className="flex gap-2">
                 {!previewLoading && (
                   <button
                     onClick={() => {
-                      const link = document.createElement('a');
+                      const link = document.createElement("a");
                       link.href = preview.url;
                       link.download = preview.name;
                       document.body.appendChild(link);
@@ -510,7 +484,7 @@ export default function UserDashboard() {
                     Download
                   </button>
                 )}
-                
+
                 <button
                   onClick={() => {
                     if (preview.url) URL.revokeObjectURL(preview.url);
@@ -523,7 +497,7 @@ export default function UserDashboard() {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-4 max-h-[70vh] overflow-auto">
               {previewLoading || !preview.url ? (
                 <div className="text-center py-12">
@@ -546,7 +520,9 @@ export default function UserDashboard() {
                     />
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-500 mb-4">Preview not available for this file type</p>
+                      <p className="text-gray-500 mb-4">
+                        Preview not available for this file type
+                      </p>
                       <a
                         href={preview.url}
                         download={preview.name}

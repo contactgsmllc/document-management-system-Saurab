@@ -11,6 +11,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -39,13 +41,15 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initRoles() {
-        // Create SUPER_ADMIN role if not exists
-        if (!roleRepository.existsByName(RoleType.SUPER_ADMIN)) {
-            Role role = new Role();
-            role.setName(RoleType.SUPER_ADMIN);
-            roleRepository.save(role);
+        for (RoleType roleType : List.of(RoleType.SUPER_ADMIN, RoleType.USER)) {
+            if (!roleRepository.existsByName(roleType)) {
+                Role role = new Role();
+                role.setName(roleType);
+                roleRepository.save(role);
+            }
         }
     }
+
 
     private void initSuperAdmin() {
         // Create user only if not exists

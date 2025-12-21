@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users/companies/{companyId}/documents")
-public class DocumentController {
+@RequestMapping("/admin/companies/{companyId}/documents")
+public class DocumentAdminController {
 
     private final DocumentService docService;
     private final DocumentRepository documentRepo;
 
-    public DocumentController(DocumentService docService,DocumentRepository documentRepo)
+    public DocumentAdminController(DocumentService docService, DocumentRepository documentRepo)
     { this.docService = docService;
         this.documentRepo = documentRepo;
     }
@@ -42,7 +42,7 @@ public class DocumentController {
     @GetMapping
     public List<DocumentMetadata> list(@PathVariable Long companyId) {
 
-        return documentRepo.findByCompanyIdAndStatusOrderByUploadedAtDesc(companyId, Status.ACTIVE)
+        return documentRepo.findByCompanyIdOrderByUploadedAtDesc(companyId)
                 .stream()
                 .map(d -> new DocumentMetadata(
                         d.getId(),

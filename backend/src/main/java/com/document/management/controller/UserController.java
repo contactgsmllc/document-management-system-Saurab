@@ -7,7 +7,6 @@ import com.document.management.dto.RegisterRequest;
 import com.document.management.dto.UserResponse;
 import com.document.management.model.Company;
 import com.document.management.model.Status;
-import com.document.management.model.User;
 import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.UserRepository;
 import com.document.management.service.UserService;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
     private final CompanyRepository companyRepo;
     private final UserRepository repo;
@@ -46,13 +45,13 @@ public class UserController {
 
 
 
-    @GetMapping("/companies")
+    @GetMapping("/companies/list")
     public List<Company> listCompanies() {
         return companyRepo.findByStatusOrderByCreatedAtDesc(Status.ACTIVE);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public List<UserResponse> listAll() {
-        return service.listUsers();
+        return service.listActiveUsers();
     }
 }

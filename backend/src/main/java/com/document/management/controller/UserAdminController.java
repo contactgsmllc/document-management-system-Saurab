@@ -35,7 +35,7 @@ public class UserAdminController {
 
     @GetMapping
     public List<UserResponse> listUsers() {
-        return userService.listUsers();
+        return userService.listAllUsers();
     }
 
     @PostMapping

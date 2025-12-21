@@ -4,6 +4,7 @@ import com.document.management.dto.CompanyResponse;
 import com.document.management.model.Company;
 import com.document.management.model.Status;
 import com.document.management.repository.CompanyRepository;
+import com.document.management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,17 @@ public class CompanyService {
 
     @Autowired
     private CompanyRepository companyRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    public boolean hasActiveUsers(Long companyId) {
+        return userRepo.existsByCompanyIdAndStatus(companyId, Status.ACTIVE);
+    }
+
+    public boolean existsInactiveCompanyWithName(String name) {
+        return companyRepo.existsByNameAndStatus(name, Status.INACTIVE);
+    }
 
     @Transactional
     public void softDeleteCompany(Long id) {
@@ -48,10 +60,9 @@ public class CompanyService {
         res.setAddress(company.getAddress());
         res.setState(company.getState());
         res.setZipCode(company.getZipCode());
-        res.setContact_person(company.getContact_person());
+        res.setContact_person(company.getContactPerson());
         res.setEmail(company.getEmail());
         res.setPhone(company.getPhone());
-        res.setEinNumber(company.getEinNumber());
         res.setCreatedAt(company.getCreatedAt());
         res.setStatus(company.getStatus());
 

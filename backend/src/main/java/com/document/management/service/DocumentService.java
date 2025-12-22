@@ -217,4 +217,18 @@ public class DocumentService {
 
         docRepo.delete(doc);
     }
+    @Transactional
+    public Document reactivateDocument(Long documentId) {
+
+        Document doc = docRepo.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        if (doc.getStatus() == Status.ACTIVE) {
+            throw new RuntimeException("Document is already active");
+        }
+
+        doc.setStatus(Status.ACTIVE);
+        return docRepo.save(doc);
+    }
+
 }

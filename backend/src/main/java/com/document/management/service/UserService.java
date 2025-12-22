@@ -187,7 +187,22 @@ public class UserService {
             userRepo.deleteById(id);
         }
 
+    @Transactional
+    public User reactivateUser(Long userId) {
 
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getStatus() == Status.ACTIVE) {
+            throw new RuntimeException("User is already active");
+        }
+
+        user.setStatus(Status.ACTIVE);
+        return userRepo.save(user);
     }
+
+
+
+}
 
 

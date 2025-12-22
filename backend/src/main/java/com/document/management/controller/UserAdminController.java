@@ -106,5 +106,10 @@ public class UserAdminController {
         userService.hardDeleteUser(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}/reactivate")
+    public ResponseEntity<User> reactivateUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.reactivateUser(id));
+    }
+
 
 }

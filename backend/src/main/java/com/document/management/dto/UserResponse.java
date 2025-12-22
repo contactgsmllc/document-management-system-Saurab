@@ -3,7 +3,9 @@ package com.document.management.dto;
 import com.document.management.model.Company;
 import com.document.management.model.Role;
 import com.document.management.model.Status;
+import lombok.Data;
 
+@Data
 public class UserResponse {
     private Long id;
     private String email;
@@ -11,27 +13,20 @@ public class UserResponse {
     private Company company;
     private boolean approved;    // ⭐ ADD THIS FIELD
     private Status status;
+    private String firstName;
+    private String middleName;
+    private String lastName;
 
-    public UserResponse(Long id, String email, Role role, Company company,boolean approved,Status status) {
+    public UserResponse(Long id, String email, Role role, Company company,boolean approved,Status status,String firstName,String middleName,String lastName) {
         this.id = id;
         this.email = email;
         this.role = role;
         this.company = company;
         this.approved = approved;
         this.status = status;
+        this.firstName= firstName;
+        this.middleName= middleName;
+        this.lastName= lastName;
     }
-    public Long getId() {
-        return id;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public Role getRole() {
-        return role;
-    }
-    public Company getCompany() {
-        return company;
-    }
-    public boolean isApproved() { return approved; }
-    public Status getStatus() { return status; }
+
 }

@@ -7,11 +7,14 @@ public class LoginResponse {
         private Long userId;
         private Long companyId;
 
+
         public LoginResponse(String token, String role ,Long userId, Long companyId) {
             this.token = token;
             this.role = role;
             this.userId = userId;
             this.companyId = companyId;
+
+
         }
 
         public String getToken() {

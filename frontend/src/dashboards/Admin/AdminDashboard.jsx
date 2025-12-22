@@ -114,7 +114,7 @@ const AdminDashboard = () => {
   const fetchCompanies = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/api/users/companies");
+      const { data } = await api.get("/admin/companies/list");
       setCompanies(data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/api/users");
+      const { data } = await api.get("/admin/users");
       setUsers(data);
     } catch (error) {
       if (error.response?.status === 401) {

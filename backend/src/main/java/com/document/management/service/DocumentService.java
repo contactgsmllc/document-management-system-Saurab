@@ -128,7 +128,7 @@ public class DocumentService {
         doc.setSize(file.getSize());
         doc.setCompanyId(companyId);
         doc.setStatus(Status.ACTIVE);
-        doc.setUploadedByUserId(current.getId());
+        doc.setUploadedByUserId(current.getEmail());
         doc.setUploadedAt(Instant.now());
         doc.setDescription(description);
         doc.setPath(target.toString());

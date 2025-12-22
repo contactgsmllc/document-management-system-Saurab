@@ -17,7 +17,7 @@ public class Document {
     private String contentType;
     private Long size;
     private Long companyId;         // FK to company
-    private Long uploadedByUserId;  // who uploaded
+    private String uploadedByUserId;  // who uploaded
     private Instant uploadedAt;
     private String description;     // optional
     private String path;

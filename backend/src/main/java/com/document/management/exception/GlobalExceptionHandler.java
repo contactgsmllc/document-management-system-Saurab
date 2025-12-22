@@ -44,6 +44,20 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    // Business rule violations (403)
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<?> handleForbiddenException(ForbiddenException ex) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        Map<String, Object> body = Map.of(
+                "timestamp", Instant.now(),
+                "status", status.value(),
+                "error", status.getReasonPhrase(),
+                "message", ex.getMessage()
+        );
+        return new ResponseEntity<>(body, status);
+    }
+
+
     // Handle exceptions where controller/service set a specific ResponseStatus
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {

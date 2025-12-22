@@ -50,12 +50,18 @@ public class CompanyAdminController {
         companyService.softDeleteCompany(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}/reactivate")
+    public ResponseEntity<Company> reactivateCompany(@PathVariable Long id) {
+        return ResponseEntity.ok(companyService.reactivateCompany(id));
+    }
+
 
     @DeleteMapping("/{id}/permanent")
     public ResponseEntity<Void> permanentDeleteCompany(@PathVariable Long id) {
         companyService.hardDeleteCompany(id);
         return ResponseEntity.noContent().build();
     }
+
 
     @GetMapping("/list")
     public List<Company> listCompanies() {

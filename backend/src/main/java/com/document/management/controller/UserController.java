@@ -43,8 +43,6 @@ public class UserController {
         return ResponseEntity.ok(service.login(req));
     }
 
-
-
     @GetMapping("/companies/list")
     public List<Company> listCompanies() {
         return companyRepo.findByStatusOrderByCreatedAtDesc(Status.ACTIVE);

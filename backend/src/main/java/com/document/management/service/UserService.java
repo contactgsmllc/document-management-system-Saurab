@@ -37,28 +37,44 @@ public class UserService {
     public UserResponse register(RegisterRequest req) {
 
         User user = new User();
+
         user.setEmail(req.getEmail());
         user.setPassword(new BCryptPasswordEncoder().encode(req.getPassword()));
-        user.setCompany(
-                companyRepo.findById(req.getCompanyId())
-                        .orElseThrow(() -> new RuntimeException("Company not found"))
-        );
+
+        // ✅ NEW: name mapping (THIS WAS MISSING)
+        user.setFirstName(req.getFirstName());
+        user.setMiddleName(req.getMiddleName());
+        user.setLastName(req.getLastName());
+
+        if (req.getCompanyId() != null) {
+            user.setCompany(
+                    companyRepo.findById(req.getCompanyId())
+                            .orElseThrow(() -> new RuntimeException("Company not found"))
+            );
+        }
+
         Role userRole = roleRepo.findByName(RoleType.USER)
                 .orElseThrow(() -> new RuntimeException("USER role not found in database"));
 
         user.setRole(userRole);
         user.setApproved(false);
+        user.setStatus(Status.ACTIVE);
+
         userRepo.save(user);
+
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getRole(),
                 user.getCompany(),
                 user.isApproved(),
-                user.getStatus()
-
+                user.getStatus(),
+                user.getFirstName(),
+                user.getMiddleName(),
+                user.getLastName()
         );
     }
+
 
 
     public LoginResponse login(LoginRequest req) {
@@ -86,24 +102,26 @@ public class UserService {
                 roleName,
                 userId,
                 companyId
+
+
         );
     }
 
     public List<UserResponse> listAllUsers() {
         return userRepo.findAll().stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus()))
+                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(), u.getFirstName(), u.getMiddleName(),u.getLastName()))
                 .collect(Collectors.toList());
     }
 
     public List<UserResponse> listActiveUsers() {
         return userRepo.findAllUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus()))
+                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(),u.getFirstName(),u.getMiddleName(),u.getLastName()))
                 .collect(Collectors.toList());
     }
 
     public List<UserResponse> listPendingUsers() {
         return userRepo.findPendingUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus()))
+                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(),u.getFirstName(),u.getMiddleName(),u.getLastName()))
                 .collect(Collectors.toList());
     }
 
@@ -121,7 +139,10 @@ public class UserService {
                 user.getRole(),
                 user.getCompany(),
                 user.isApproved(),
-                user.getStatus()
+                user.getStatus(),
+                user.getFirstName(),
+                user.getMiddleName(),
+                user.getLastName()
         );
     }
 
@@ -135,8 +156,6 @@ public class UserService {
                     HttpStatus.NOT_FOUND, "User not found");
         }
 
-
-
             // Map entity -> DTO (do NOT expose password or sensitive fields)
             return new UserResponse(
                     user.getId(),
@@ -144,7 +163,10 @@ public class UserService {
                     user.getRole(),
                     user.getCompany(),
                     user.isApproved(),
-                    user.getStatus()
+                    user.getStatus(),
+                    user.getFirstName(),
+                    user.getMiddleName(),
+                    user.getLastName()
             );
 
 

@@ -44,6 +44,9 @@ public class UserAdminController {
         user.setEmail(req.getEmail());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setCompany(companyRepo.findById(req.getCompanyId()).orElseThrow());
+        user.setFirstName(req.getFirstName());
+        user.setMiddleName(req.getMiddleName());
+        user.setLastName(req.getLastName());
 
         // Assign role: since RegisterRequest no longer contains roleId,
         // pick a sensible default role by name (try "USER" then "ROLE_USER"), otherwise fallback to any role.

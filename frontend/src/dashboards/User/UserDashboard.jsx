@@ -68,7 +68,7 @@ export default function UserDashboard() {
   // Fetch user map
   const fetchUserMap = useCallback(async () => {
     try {
-      const response = await api.get(`/api/users`);
+      const response = await api.get(`/user/list`);
 
       if (response.data && Array.isArray(response.data)) {
         const userMap = response.data.reduce((map, user) => {
@@ -95,7 +95,7 @@ export default function UserDashboard() {
 
     try {
       const response = await api.get(
-        `/api/companies/${companyId}/documents`
+        `/users/companies/${companyId}/documents`
       );
 
       if (response.data && Array.isArray(response.data)) {
@@ -163,7 +163,7 @@ export default function UserDashboard() {
         formData.append("file", file);
 
         uploadPromises.push(
-          api.post(`/api/companies/${companyId}/documents`, formData, {
+          api.post(`/users/companies/${companyId}/documents`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           })
         );
@@ -184,7 +184,7 @@ export default function UserDashboard() {
       return;
     setError("");
     try {
-      await api.delete(`/api/companies/${companyId}/documents/${id}`);
+      await api.delete(`/users/companies/${companyId}/documents/${id}`);
       setDocuments((prev) => prev.filter((doc) => doc.id !== id));
     } catch (err) {
       setError(err.response?.data?.message || "Delete failed");
@@ -202,7 +202,7 @@ export default function UserDashboard() {
 
     try {
       const response = await api.get(
-        `/api/companies/${companyId}/documents/${doc.id}`,
+        `/users/companies/${companyId}/documents/${doc.id}`,
         {
           responseType: "blob",
         }
@@ -229,7 +229,7 @@ export default function UserDashboard() {
     setError("");
     try {
       const response = await api.get(
-        `/api/companies/${companyId}/documents/${doc.id}`,
+        `/users/companies/${companyId}/documents/${doc.id}`,
         {
           responseType: "blob",
         }

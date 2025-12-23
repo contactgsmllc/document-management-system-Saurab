@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import api from "../api/axios";
 import {
-  Upload,
+  Calendar,
   Download,
   Eye,
-  Trash2,
-  X,
-  Loader2,
   FileText,
-  Calendar,
+  Loader2,
+  Trash2,
+  Upload,
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 export default function DocumentManager({ role, companyId }) {
   const [documents, setDocuments] = useState([]);
@@ -59,29 +59,38 @@ export default function DocumentManager({ role, companyId }) {
 
   const fetchCompanies = async () => {
     try {
-      const { data } = await api.get("/api/users/companies");
+      const { data } = await api.get("/admin/companies/list");
 
       setCompanies(data);
     } catch (error) {
       console.error("Failed to fetch companies", error);
     }
   };
+  
   // Fetch documents for selected company
-  const fetchDocuments = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get(
-        `/api/companies/${selectedCompany}/documents`
-      );
+ const fetchDocuments = async () => {
+  setLoading(true);
+  try {
+    const { data } = await api.get(
+      `/admin/companies/${selectedCompany}/documents`
+    );
 
-      setDocuments(data);
-    } catch (error) {
-      console.error("Failed to fetch documents", error);
-      setDocuments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // No complex normalization needed anymore!
+    // Just ensure fallback if somehow missing (defensive)
+    const normalizedDocs = data.map((doc) => ({
+      ...doc,
+      status: doc.status || "ACTIVE", // safe fallback
+    }));
+
+    setDocuments(normalizedDocs);
+  } catch (error) {
+    console.error("Failed to fetch documents", error);
+    setDocuments([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Upload files
   const uploadFile = async (files) => {
@@ -98,7 +107,7 @@ export default function DocumentManager({ role, companyId }) {
         const form = new FormData();
         form.append("file", file);
 
-        await api.post(`/api/companies/${selectedCompany}/documents`, form);
+        await api.post(`/admin/companies/${selectedCompany}/documents`, form);
       }
 
       fetchDocuments();
@@ -117,7 +126,9 @@ export default function DocumentManager({ role, companyId }) {
       return;
 
     try {
-      await api.delete(`/api/companies/${selectedCompany}/documents/${id}`);
+      await api.delete(
+        `/admin/companies/${selectedCompany}/documents/${id}/permanent`
+      );
 
       setDocuments((docs) => docs.filter((doc) => doc.id !== id));
       alert("Document deleted successfully!");
@@ -127,11 +138,46 @@ export default function DocumentManager({ role, companyId }) {
     }
   };
 
+  // Toggle document active / inactive
+  const toggleDocumentStatus = async (doc) => {
+  if (!doc.status) {
+    console.error("Document status unknown, cannot toggle:", doc);
+    return;
+  }
+
+  try {
+    let updatedDoc = { ...doc };
+
+    if (doc.status === "ACTIVE") {
+      // Soft delete → make INACTIVE
+      await api.delete(
+        `/admin/companies/${selectedCompany}/documents/${doc.id}`
+      );
+      updatedDoc.status = "INACTIVE";
+    } else {
+      // Reactivate → make ACTIVE
+      await api.put(
+        `/admin/companies/${selectedCompany}/documents/${doc.id}/reactivate`
+      );
+      updatedDoc.status = "ACTIVE";
+    }
+
+    // Update UI after successful backend response
+    setDocuments((prev) =>
+      prev.map((d) => (d.id === doc.id ? updatedDoc : d))
+    );
+  } catch (error) {
+    console.error("Failed to toggle document status", error);
+    alert("Failed to update document status");
+  }
+};
+
+
   // Preview document
   const previewDoc = async (doc) => {
     try {
       const res = await api.get(
-        `/api/companies/${selectedCompany}/documents/${doc.id}`,
+        `/admin/companies/${selectedCompany}/documents/${doc.id}`,
         {
           responseType: "blob", // important for files
         }
@@ -149,7 +195,7 @@ export default function DocumentManager({ role, companyId }) {
   const downloadDoc = async (doc) => {
     try {
       const res = await api.get(
-        `/api/companies/${selectedCompany}/documents/${doc.id}`,
+        `/admin/companies/${selectedCompany}/documents/${doc.id}`,
         {
           responseType: "blob", // Very important for file downloads
         }
@@ -393,7 +439,23 @@ export default function DocumentManager({ role, companyId }) {
                     </td>
 
                     <td className="px-4 sm:px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2 items-center">
+                        {/* Active / Inactive Toggle */}
+                        <button
+                          onClick={() => toggleDocumentStatus(doc)}
+                          className={`px-2 py-1 text-xs rounded-full font-medium transition-colors
+      ${
+        doc.status === "ACTIVE"
+          ? "bg-green-100 text-green-700 hover:bg-green-200"
+          : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+      }`}
+                          title={
+                            doc.status === "ACTIVE" ? "Deactivate" : "Activate"
+                          }
+                        >
+                          {doc.status === "ACTIVE" ? "Active" : "Inactive"}
+                        </button>
+
                         <button
                           onClick={() => previewDoc(doc)}
                           className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors"

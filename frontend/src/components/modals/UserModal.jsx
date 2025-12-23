@@ -2,43 +2,71 @@ import React, { useEffect, useState } from "react";
 import { User, Mail, Lock, Building2, X } from "lucide-react";
 import api from "../../api/axios";
 
-const UserModal = ({ open, onClose, user, companies, onSuccess }) => {
+const UserModal = ({ open, onClose, user, onSuccess }) => {
   const isEdit = Boolean(user);
 
   const [form, setForm] = useState({
-    email: "",
-    password: "",
-    companyId: "",
-  });
+  email: "",
+  password: "",
+  companyId: "",
+  firstName: "",
+  middleName: "",
+  lastName: "",
+});
+
 
   useEffect(() => {
     if (user) {
-      setForm({
-        email: user.email,
-        password: "",
-        companyId: user.company?.id || "",
-      });
+     setForm({
+  email: user.email,
+  password: "",
+  companyId: user.company?.id || "",
+  firstName: user.firstName || "",
+  middleName: user.middleName || "",
+  lastName: user.lastName || "",
+});
+
     }
   }, [user]);
 
+  const [companies, setCompanies] = useState([]);
+const [loadingCompanies, setLoadingCompanies] = useState(false);
+useEffect(() => {
+  if (!open) return;
+
+  setLoadingCompanies(true);
+  api.get("/users/companies/list")
+    .then(res => setCompanies(res.data))
+    .finally(() => setLoadingCompanies(false));
+}, [open]);
+
   const handleSubmit = async () => {
-    if (!form.email || !form.companyId) {
-      return alert("Required fields missing");
-    }
+    if (!form.email || !form.companyId || !form.firstName || !form.lastName) {
+  return alert("Please fill all required fields");
+}
+
 
     try {
       if (isEdit) {
         await api.put(`/admin/users/${user.id}`, {
-          email: form.email,
-          companyId: Number(form.companyId),
-          ...(form.password && { password: form.password }),
-        });
+  email: form.email,
+  companyId: Number(form.companyId),
+  firstName: form.firstName,
+  middleName: form.middleName || null,
+  lastName: form.lastName,
+  ...(form.password && { password: form.password }),
+});
+
       } else {
         await api.post(`/admin/users`, {
-          email: form.email,
-          password: form.password,
-          companyId: Number(form.companyId),
-        });
+  email: form.email,
+  password: form.password,
+  companyId: Number(form.companyId),
+  firstName: form.firstName,
+  middleName: form.middleName || null,
+  lastName: form.lastName,
+});
+
       }
 
       onSuccess();
@@ -79,6 +107,46 @@ const UserModal = ({ open, onClose, user, companies, onSuccess }) => {
 
         {/* Body */}
         <div className="p-6 space-y-4">
+
+          {/* First Name */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    First Name *
+  </label>
+  <input
+    placeholder="First name"
+    value={form.firstName}
+    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+  />
+</div>
+
+{/* Middle Name */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Middle Name (optional)
+  </label>
+  <input
+    placeholder="Middle name"
+    value={form.middleName}
+    onChange={(e) => setForm({ ...form, middleName: e.target.value })}
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+  />
+</div>
+
+{/* Last Name */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Last Name *
+  </label>
+  <input
+    placeholder="Last name"
+    value={form.lastName}
+    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+  />
+</div>
+
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

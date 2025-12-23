@@ -1,24 +1,24 @@
-import DocumentManager from "../../components/DocumentManager.jsx";
 import DetailsModal from "../../components/DetailsModal";
-import UserModal from "../../components/modals/UserModal.jsx";
+import DocumentManager from "../../components/DocumentManager.jsx";
 import CompanyModal from "../../components/modals/CompanyModal.jsx";
+import UserModal from "../../components/modals/UserModal.jsx";
 
-import api from "../../api/axios.js";
-import React, { useState, useEffect } from "react";
 import {
-  Users,
   Building2,
-  UserPlus,
-  PlusCircle,
-  Trash2,
-  Edit2,
   CheckCircle,
-  XCircle,
+  Edit2,
+  FileText,
   LogOut,
   Menu,
+  PlusCircle,
+  Trash2,
+  UserPlus,
+  Users,
   X,
-  FileText,
+  XCircle,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "../../api/axios.js";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("users");
@@ -162,70 +162,6 @@ const AdminDashboard = () => {
 
   const isUserPending = (userId) => pendingUsers.some((u) => u.id === userId);
 
-  // const createCompany = async () => {
-  //   if (!companyForm.name.trim()) return alert("Company name is required");
-
-  //   try {
-  //     await api.post("/admin/companies", {
-  //       name: companyForm.name.trim(),
-  //       address: companyForm.address.trim(),
-  //       city: companyForm.city.trim(),
-  //       state: companyForm.state.trim(),
-  //       zipCode: companyForm.zipCode.trim(),
-  //       contact_person: companyForm.contact_person.trim(),
-  //       email: companyForm.email.trim(),
-  //       phone: companyForm.phone.trim(),
-  //       einNumber: companyForm.einNumber.trim(),
-  //     });
-
-  //     setCompanyForm({
-  //       name: "",
-  //       address: "",
-  //       city: "",
-  //       state: "",
-  //       zipCode: "",
-  //       contact_person: "",
-  //       email: "",
-  //       phone: "",
-  //       einNumber: "",
-  //     });
-  //     setShowModal(false);
-  //     await fetchCompanies();
-  //     alert("Company created successfully!");
-  //   } catch (error) {
-  //     alert(
-  //       "Failed to create company: " +
-  //         (error.response?.data?.message || error.message)
-  //     );
-  //   }
-  // };
-
-  // const createUser = async () => {
-  //   if (
-  //     !userForm.email.trim() ||
-  //     !userForm.password.trim() ||
-  //     !userForm.companyId
-  //   ) {
-  //     return alert("Please fill all fields");
-  //   }
-
-  //   try {
-  //     await api.post("/admin/users", {
-  //       email: userForm.email.trim(),
-  //       password: userForm.password.trim(),
-  //       companyId: parseInt(userForm.companyId),
-  //     });
-
-  //     setUserForm({ email: "", password: "", companyId: "" });
-  //     setShowModal(false);
-  //     await Promise.all([fetchUsers(), fetchPendingUsers()]);
-  //     alert("User created successfully!");
-  //   } catch (error) {
-  //     alert("Failed to create user");
-  //     console.error(error);
-  //   }
-  // };
-
   const toggleApproval = async (userId, approve) => {
     const confirmMsg = approve
       ? "Are you sure you want to approve this user?"
@@ -251,11 +187,44 @@ const AdminDashboard = () => {
     }
   };
 
+  const toggleStatus = async ({ type, id, isActive }) => {
+    const confirmMsg = isActive
+      ? "Are you sure you want to deactivate this?"
+      : "Are you sure you want to activate this?";
+
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      if (type === "user") {
+        if (isActive) {
+          await api.delete(`/admin/users/${id}`);
+        } else {
+          await api.put(`/admin/users/${id}/reactivate`);
+        }
+        await Promise.all([fetchUsers(), fetchPendingUsers()]);
+      }
+
+      if (type === "company") {
+        if (isActive) {
+          await api.delete(`/admin/companies/${id}/permanent`);
+        } else {
+          await api.put(`/admin/companies/${id}/reactivate`);
+        }
+        await fetchCompanies();
+      }
+
+      alert(isActive ? "Deactivated successfully" : "Activated successfully");
+    } catch (error) {
+      alert("Failed to update status");
+      console.error(error);
+    }
+  };
+
   const deleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      await api.delete(`/admin/users/${userId}`);
+      await api.delete(`/admin/users/${userId}/permanent`);
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
       alert("User deleted successfully!");
     } catch (error) {
@@ -268,117 +237,13 @@ const AdminDashboard = () => {
       return;
 
     try {
-      await api.delete(`/admin/companies/${companyId}`);
+      await api.delete(`/admin/companies/${companyId}/permanent`);
       await fetchCompanies();
       alert("Company deleted successfully!");
     } catch (error) {
       alert("Failed to delete company");
     }
   };
-
-  //   const updateCompany = async () => {
-  //   if (!companyForm.name.trim()) {
-  //     return alert("Company name is required");
-  //   }
-
-  //   try {
-  //     await api.put(`/admin/companies/${selectedItem.id}`, {
-  //       name: companyForm.name.trim(),
-  //       address: companyForm.address.trim(),
-  //       city: companyForm.city.trim(),
-  //       state: companyForm.state.trim(),
-  //       zipCode: companyForm.zipCode.trim(),
-  //       contact_person: companyForm.contact_person.trim(),
-  //       email: companyForm.email.trim(),
-  //       phone: companyForm.phone.trim(),
-  //       einNumber: companyForm.einNumber.trim(),
-  //     });
-
-  //     setShowModal(false);
-  //     await fetchCompanies();
-  //     alert("Company updated successfully!");
-  //   } catch (error) {
-  //     alert("Failed to update company");
-  //   }
-  // };
-
-  // const updateUser = async () => {
-  //   if (!userForm.email.trim()) return alert("Email is required");
-  //   if (!userForm.companyId) return alert("Please select a company");
-
-  //   const payload = {
-  //     email: userForm.email.trim(),
-  //     companyId: parseInt(userForm.companyId),
-  //   };
-  //   if (userForm.password?.trim()) payload.password = userForm.password.trim();
-
-  //   try {
-  //     await api.put(`/admin/users/${selectedItem.id}`, payload);
-  //     closeModal();
-  //     await Promise.all([fetchUsers(), fetchPendingUsers()]);
-  //     alert("User updated successfully!");
-  //   } catch (error) {
-  //     alert("Failed to update user");
-  //   }
-  // };
-
-  //   const openModal = (type, item = null) => {
-  //     setModalType(type);
-  //     setSelectedItem(item);
-  //     if (type === "editCompany" && item) {
-  //   setCompanyForm({
-  //     name: item.name || "",
-  //     address: item.address || "",
-  //     city: item.city || "",
-  //     state: item.state || "",
-  //     zipCode: item.zipCode || "",
-  //     contact_person: item.contact_person || "",
-  //     email: item.email || "",
-  //     phone: item.phone || "",
-  //     einNumber: item.einNumber || "",
-  //   });
-  // }
-  //  else if ((type === "createUser" || type === "editUser") && item) {
-  //       setUserForm({
-  //         email: item.email,
-  //         password: "",
-  //         companyId: item.company?.id || "",
-  //       });
-  //     } else if (type === "createUser") {
-  //       setUserForm({ email: "", password: "", companyId: "" });
-  //     } else if (type === "createCompany") {
-  //       setCompanyForm({
-  //         name: "",
-  //         address: "",
-  //         city: "",
-  //         state: "",
-  //         zipCode: "",
-  //         contact_person: "",
-  //         email: "",
-  //         phone: "",
-  //         einNumber: "",
-  //       });
-  //     }
-  //     setShowModal(true);
-  //   };
-
-  // const closeModal = () => {
-  //   setShowModal(false);
-  //   setModalType("");
-  //   setSelectedItem(null);
-  //   setCompanyForm({
-  //     name: "",
-  //     address: "",
-  //     city: "",
-  //     state: "",
-  //     zipCode: "",
-  //     contact_person: "",
-  //     email: "",
-  //     phone: "",
-  //     einNumber: "",
-  //   });
-  //   setUserForm({ email: "", password: "", companyId: "" });
-  // };
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
@@ -679,6 +544,8 @@ const AdminDashboard = () => {
                                   className="text-sm font-medium text-blue-700 hover:underline cursor-pointer"
                                 >
                                   {user.email}
+                                  
+
                                 </button>
 
                                 <div className="sm:hidden text-xs text-gray-500 mt-1">
@@ -703,6 +570,31 @@ const AdminDashboard = () => {
                               </td>
                               <td className="px-4 sm:px-6 py-4 text-right ">
                                 <div className="flex justify-end gap-4 ">
+
+                                  <button
+                                    onClick={() =>
+                                      toggleStatus({
+                                        type: "user",
+                                        id: user.id,
+                                        isActive: user.status === "ACTIVE",
+                                      })
+                                    }
+                                    className={`px-2 py-1 text-xs rounded-full font-medium transition-colors cursor-pointer ${
+                                      user.status === "ACTIVE"
+                                        ? "bg-green-200 text-green-700 hover:bg-green-200"
+                                        : "bg-red-200 text-red-500 hover:bg-gray-300"
+                                    }`}
+                                    title={
+                                      user.status === "ACTIVE"
+                                        ? "Deactivate"
+                                        : "Activate"
+                                    }
+                                  >
+                                    {user.status === "ACTIVE"
+                                      ? "Active"
+                                      : "Inactive"}
+                                  </button>
+
                                   <button
                                     onClick={() =>
                                       toggleApproval(
@@ -744,6 +636,7 @@ const AdminDashboard = () => {
                                   >
                                     <Trash2 size={16} />
                                   </button>
+                                  
                                 </div>
                               </td>
                             </tr>
@@ -855,6 +748,29 @@ const AdminDashboard = () => {
                               <td className="px-4 sm:px-6 py-4 text-right">
                                 <div className="flex justify-end gap-2">
                                   <button
+                                    onClick={() =>
+                                      toggleStatus({
+                                        type: "company",
+                                        id: company.id,
+                                        isActive: company.status === "ACTIVE",
+                                      })
+                                    }
+                                    className={`px-2 py-1 text-xs rounded-full font-medium transition-colors ${
+                                      company.status === "ACTIVE"
+                                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                                    }`}
+                                    title={
+                                      company.status === "ACTIVE"
+                                        ? "Deactivate company"
+                                        : "Activate company"
+                                    }
+                                  >
+                                    {company.status === "ACTIVE"
+                                      ? "Active"
+                                      : "Inactive"}
+                                  </button>
+                                  <button
                                     onClick={() => {
                                       setEditingCompanyId(company.id);
                                       setCompanyModalOpen(true);
@@ -869,6 +785,7 @@ const AdminDashboard = () => {
                                   >
                                     <Trash2 size={16} />
                                   </button>
+                                  
                                 </div>
                               </td>
                             </tr>

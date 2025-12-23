@@ -2,6 +2,7 @@ import DetailsModal from "../../components/DetailsModal";
 import DocumentManager from "../../components/DocumentManager.jsx";
 import CompanyModal from "../../components/modals/CompanyModal.jsx";
 import UserModal from "../../components/modals/UserModal.jsx";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
   Building2,
@@ -21,7 +22,6 @@ import { useEffect, useState } from "react";
 import api from "../../api/axios.js";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);
   const [pendingUsers, setPendingUsers] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -44,6 +44,21 @@ const AdminDashboard = () => {
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
+  // Get active tab from URL
+  // =========================================================
+  const { tab } = useParams();
+  const navigate = useNavigate();
+
+  const activeTab = tab || "users"; // default
+    useEffect(() => {
+    const validTabs = ["users", "pending", "companies", "documents"];
+
+    if (!validTabs.includes(activeTab)) {
+      navigate("/admin/dashboard/users", { replace: true });
+    }
+  }, [activeTab, navigate]);
+
+// ==========================================================
   const itemsPerPage = 10;
 
   const userRole = localStorage.getItem("role");
@@ -132,7 +147,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/admin/users");
+      const { data } = await api.get("/users/list");
       setUsers(data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -173,7 +188,10 @@ const AdminDashboard = () => {
       await api.put(`/admin/users/${userId}/approve`, null, {
         params: { approve },
       });
+
+      // ✅ BOTH lists must refresh
       await Promise.all([fetchUsers(), fetchPendingUsers()]);
+
       alert(
         approve
           ? "User approved successfully!"
@@ -215,7 +233,16 @@ const AdminDashboard = () => {
 
       alert(isActive ? "Deactivated successfully" : "Activated successfully");
     } catch (error) {
-      alert("Failed to update status");
+      // 👇 Specific handling for 409 conflict
+      if (error.response?.status === 409) {
+        alert(
+          error.response.data?.message ||
+            "This company has active users and cannot be deactivated."
+        );
+      } else {
+        alert("Failed to update status");
+      }
+
       console.error(error);
     }
   };
@@ -233,17 +260,34 @@ const AdminDashboard = () => {
   };
 
   const deleteCompany = async (companyId) => {
-    if (!window.confirm("Are you sure you want to delete this company?"))
-      return;
+  if (!window.confirm("Are you sure you want to delete this company?"))
+    return;
 
-    try {
-      await api.delete(`/admin/companies/${companyId}/permanent`);
-      await fetchCompanies();
-      alert("Company deleted successfully!");
-    } catch (error) {
-      alert("Failed to delete company");
+  try {
+    await api.delete(`/admin/companies/${companyId}/permanent`);
+    await fetchCompanies();
+    alert("Company deleted successfully!");
+  } catch (error) {
+    const status = error.response?.status;
+    const backendMessage = error.response?.data?.message?.toLowerCase();
+
+    // ✅ VALID & CLEAR MESSAGE FOR ADMIN
+    if (status === 400 && backendMessage?.includes("integrity")) {
+      alert(
+        "Cannot delete company with existing users."
+      );
+      return;
     }
-  };
+
+    // ✅ Fallback (any other error)
+    alert(
+      error.response?.data?.message ||
+      "Unable to delete company. Please try again."
+    );
+  }
+};
+
+
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
@@ -337,8 +381,9 @@ const AdminDashboard = () => {
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveTab(item.id);
+                    navigate(`/admin/dashboard/${item.id}`);
                     setCurrentPage(1);
+
                     if (window.innerWidth < 1024) {
                       toggleSidebar();
                     }
@@ -544,8 +589,6 @@ const AdminDashboard = () => {
                                   className="text-sm font-medium text-blue-700 hover:underline cursor-pointer"
                                 >
                                   {user.email}
-                                  
-
                                 </button>
 
                                 <div className="sm:hidden text-xs text-gray-500 mt-1">
@@ -570,7 +613,6 @@ const AdminDashboard = () => {
                               </td>
                               <td className="px-4 sm:px-6 py-4 text-right ">
                                 <div className="flex justify-end gap-4 ">
-
                                   <button
                                     onClick={() =>
                                       toggleStatus({
@@ -636,7 +678,6 @@ const AdminDashboard = () => {
                                   >
                                     <Trash2 size={16} />
                                   </button>
-                                  
                                 </div>
                               </td>
                             </tr>
@@ -785,7 +826,6 @@ const AdminDashboard = () => {
                                   >
                                     <Trash2 size={16} />
                                   </button>
-                                  
                                 </div>
                               </td>
                             </tr>
@@ -853,7 +893,6 @@ const AdminDashboard = () => {
         onClose={() => setUserModalOpen(false)}
         onSuccess={() => {
           fetchUsers();
-          fetchPendingUsers();
         }}
       />
 

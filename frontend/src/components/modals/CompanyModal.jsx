@@ -15,7 +15,7 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
     contact_person: "",
     email: "",
     phone: "",
-    einNumber: "",
+    
   });
   const [errors, setErrors] = useState({});
 
@@ -36,7 +36,7 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
           contact_person: data.contact_person || "",
           email: data.email || "",
           phone: data.phone || "",
-          einNumber: data.einNumber || "",
+          
         });
       } catch {
         alert("Failed to load company details");

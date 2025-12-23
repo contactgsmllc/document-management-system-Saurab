@@ -206,7 +206,7 @@ const AdminDashboard = () => {
 
       if (type === "company") {
         if (isActive) {
-          await api.delete(`/admin/companies/${id}/permanent`);
+          await api.delete(`/admin/companies/${id}`);
         } else {
           await api.put(`/admin/companies/${id}/reactivate`);
         }

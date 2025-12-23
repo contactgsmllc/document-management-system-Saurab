@@ -42,20 +42,20 @@ export default function DocumentManager({ role, companyId }) {
   // Helper to get user email by ID
   const getUserEmail = (id) => {
     const user = users.find((u) => u.id === id);
-    return user ? user.email : `User ${id}`;
+    return user ? user.email : `${id}`;
   };
 
   // Fetch all users
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/api/users/companies");
+      const res = await api.get("/users/companies/list");
       setUsers(res.data); // ✅ FIX
     } catch (error) {
       console.error("Failed to fetch users", error);
     }
   };
 
-  // Fetch companies for non-user roles
+  // Fetch companies
 
   const fetchCompanies = async () => {
     try {
@@ -66,31 +66,30 @@ export default function DocumentManager({ role, companyId }) {
       console.error("Failed to fetch companies", error);
     }
   };
-  
+
   // Fetch documents for selected company
- const fetchDocuments = async () => {
-  setLoading(true);
-  try {
-    const { data } = await api.get(
-      `/admin/companies/${selectedCompany}/documents`
-    );
+  const fetchDocuments = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get(
+        `/admin/companies/${selectedCompany}/documents`
+      );
 
-    // No complex normalization needed anymore!
-    // Just ensure fallback if somehow missing (defensive)
-    const normalizedDocs = data.map((doc) => ({
-      ...doc,
-      status: doc.status || "ACTIVE", // safe fallback
-    }));
+      // No complex normalization needed anymore!
+      // Just ensure fallback if somehow missing (defensive)
+      const normalizedDocs = data.map((doc) => ({
+        ...doc,
+        status: doc.status || "ACTIVE", // safe fallback
+      }));
 
-    setDocuments(normalizedDocs);
-  } catch (error) {
-    console.error("Failed to fetch documents", error);
-    setDocuments([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setDocuments(normalizedDocs);
+    } catch (error) {
+      console.error("Failed to fetch documents", error);
+      setDocuments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Upload files
   const uploadFile = async (files) => {
@@ -140,38 +139,37 @@ export default function DocumentManager({ role, companyId }) {
 
   // Toggle document active / inactive
   const toggleDocumentStatus = async (doc) => {
-  if (!doc.status) {
-    console.error("Document status unknown, cannot toggle:", doc);
-    return;
-  }
-
-  try {
-    let updatedDoc = { ...doc };
-
-    if (doc.status === "ACTIVE") {
-      // Soft delete → make INACTIVE
-      await api.delete(
-        `/admin/companies/${selectedCompany}/documents/${doc.id}`
-      );
-      updatedDoc.status = "INACTIVE";
-    } else {
-      // Reactivate → make ACTIVE
-      await api.put(
-        `/admin/companies/${selectedCompany}/documents/${doc.id}/reactivate`
-      );
-      updatedDoc.status = "ACTIVE";
+    if (!doc.status) {
+      console.error("Document status unknown, cannot toggle:", doc);
+      return;
     }
 
-    // Update UI after successful backend response
-    setDocuments((prev) =>
-      prev.map((d) => (d.id === doc.id ? updatedDoc : d))
-    );
-  } catch (error) {
-    console.error("Failed to toggle document status", error);
-    alert("Failed to update document status");
-  }
-};
+    try {
+      let updatedDoc = { ...doc };
 
+      if (doc.status === "ACTIVE") {
+        // Soft delete → make INACTIVE
+        await api.delete(
+          `/admin/companies/${selectedCompany}/documents/${doc.id}`
+        );
+        updatedDoc.status = "INACTIVE";
+      } else {
+        // Reactivate → make ACTIVE
+        await api.put(
+          `/admin/companies/${selectedCompany}/documents/${doc.id}/reactivate`
+        );
+        updatedDoc.status = "ACTIVE";
+      }
+
+      // Update UI after successful backend response
+      setDocuments((prev) =>
+        prev.map((d) => (d.id === doc.id ? updatedDoc : d))
+      );
+    } catch (error) {
+      console.error("Failed to toggle document status", error);
+      alert("Failed to update document status");
+    }
+  };
 
   // Preview document
   const previewDoc = async (doc) => {

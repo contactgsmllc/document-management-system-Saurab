@@ -6,67 +6,63 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
   const isEdit = Boolean(user);
 
   const [form, setForm] = useState({
-  email: "",
-  password: "",
-  companyId: "",
-  firstName: "",
-  middleName: "",
-  lastName: "",
-});
-
+    email: "",
+    password: "",
+    companyId: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+  });
 
   useEffect(() => {
     if (user) {
-     setForm({
-  email: user.email,
-  password: "",
-  companyId: user.company?.id || "",
-  firstName: user.firstName || "",
-  middleName: user.middleName || "",
-  lastName: user.lastName || "",
-});
-
+      setForm({
+        email: user.email,
+        password: "",
+        companyId: user.company?.id || "",
+        firstName: user.firstName || "",
+        middleName: user.middleName || "",
+        lastName: user.lastName || "",
+      });
     }
   }, [user]);
 
   const [companies, setCompanies] = useState([]);
-const [loadingCompanies, setLoadingCompanies] = useState(false);
-useEffect(() => {
-  if (!open) return;
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
+  useEffect(() => {
+    if (!open) return;
 
-  setLoadingCompanies(true);
-  api.get("/users/companies/list")
-    .then(res => setCompanies(res.data))
-    .finally(() => setLoadingCompanies(false));
-}, [open]);
+    setLoadingCompanies(true);
+    api
+      .get("/users/companies/list")
+      .then((res) => setCompanies(res.data))
+      .finally(() => setLoadingCompanies(false));
+  }, [open]);
 
   const handleSubmit = async () => {
     if (!form.email || !form.companyId || !form.firstName || !form.lastName) {
-  return alert("Please fill all required fields");
-}
-
+      return alert("Please fill all required fields");
+    }
 
     try {
       if (isEdit) {
         await api.put(`/admin/users/${user.id}`, {
-  email: form.email,
-  companyId: Number(form.companyId),
-  firstName: form.firstName,
-  middleName: form.middleName || null,
-  lastName: form.lastName,
-  ...(form.password && { password: form.password }),
-});
-
+          email: form.email,
+          companyId: Number(form.companyId),
+          firstName: form.firstName,
+          middleName: form.middleName || null,
+          lastName: form.lastName,
+          ...(form.password && { password: form.password }),
+        });
       } else {
         await api.post(`/admin/users`, {
-  email: form.email,
-  password: form.password,
-  companyId: Number(form.companyId),
-  firstName: form.firstName,
-  middleName: form.middleName || null,
-  lastName: form.lastName,
-});
-
+          email: form.email,
+          password: form.password,
+          companyId: Number(form.companyId),
+          firstName: form.firstName,
+          middleName: form.middleName || null,
+          lastName: form.lastName,
+        });
       }
 
       onSuccess();
@@ -79,11 +75,11 @@ useEffect(() => {
   if (!open) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 animate-fadeIn"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-xl w-full max-w-md shadow-2xl transform transition-all animate-slideUp"
         onClick={(e) => e.stopPropagation()}
       >
@@ -107,45 +103,44 @@ useEffect(() => {
 
         {/* Body */}
         <div className="p-6 space-y-4">
-
           {/* First Name */}
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    First Name *
-  </label>
-  <input
-    placeholder="First name"
-    value={form.firstName}
-    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-  />
-</div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              First Name *
+            </label>
+            <input
+              placeholder="First name"
+              value={form.firstName}
+              onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
 
-{/* Middle Name */}
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Middle Name (optional)
-  </label>
-  <input
-    placeholder="Middle name"
-    value={form.middleName}
-    onChange={(e) => setForm({ ...form, middleName: e.target.value })}
-    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-  />
-</div>
+          {/* Middle Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Middle Name (optional)
+            </label>
+            <input
+              placeholder="Middle name"
+              value={form.middleName}
+              onChange={(e) => setForm({ ...form, middleName: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
 
-{/* Last Name */}
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Last Name *
-  </label>
-  <input
-    placeholder="Last name"
-    value={form.lastName}
-    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-  />
-</div>
+          {/* Last Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Last Name *
+            </label>
+            <input
+              placeholder="Last name"
+              value={form.lastName}
+              onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
 
           {/* Email */}
           <div>
@@ -189,7 +184,9 @@ useEffect(() => {
               <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               <select
                 value={form.companyId}
-                onChange={(e) => setForm({ ...form, companyId: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, companyId: e.target.value })
+                }
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none bg-white"
               >
                 <option value="">Select company</option>
@@ -200,8 +197,18 @@ useEffect(() => {
                 ))}
               </select>
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
             </div>
@@ -210,14 +217,14 @@ useEffect(() => {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-gray-50 rounded-b-xl">
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium"
           >
             Cancel
           </button>
-          <button 
-            onClick={handleSubmit} 
+          <button
+            onClick={handleSubmit}
             className="px-6 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
           >
             {isEdit ? "Update" : "Create"}

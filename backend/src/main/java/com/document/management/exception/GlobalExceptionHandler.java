@@ -7,6 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -56,8 +58,20 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(body, status);
     }
+    @ExceptionHandler({ MaxUploadSizeExceededException.class, MultipartException.class })
+    public ResponseEntity<?> handleMultipartExceptions(Exception ex) {
 
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
+        Map<String, Object> body = Map.of(
+                "timestamp", Instant.now(),
+                "status", status.value(),
+                "error", status.getReasonPhrase(),
+                "message", "File too large or invalid multipart request"
+        );
+
+        return new ResponseEntity<>(body, status);
+    }
     // Handle exceptions where controller/service set a specific ResponseStatus
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {

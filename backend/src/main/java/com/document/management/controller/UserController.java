@@ -50,6 +50,6 @@ public class UserController {
 
     @GetMapping("/list")
     public List<UserResponse> listAll() {
-        return service.listActiveUsers();
+        return service.listAllUsers();
     }
 }

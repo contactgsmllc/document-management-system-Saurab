@@ -69,10 +69,6 @@ public class CompanyService {
         Company company = companyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
 
-        if (company.getStatus() != Status.ACTIVE) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Company not found");
-        }
 
         CompanyResponse res = new CompanyResponse();
         res.setId(company.getId());

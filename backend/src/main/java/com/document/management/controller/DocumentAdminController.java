@@ -50,7 +50,8 @@ public class DocumentAdminController {
                         d.getContentType(),
                         d.getSize(),
                         d.getUploadedAt(),
-                        d.getUploadedByUserId()
+                        d.getUploadedByUserId(),
+                        d.getStatus()
                 ))
                 .collect(Collectors.toList());
     }

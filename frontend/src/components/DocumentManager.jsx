@@ -45,6 +45,17 @@ export default function DocumentManager({ role, companyId }) {
     return user ? user.email : `${id}`;
   };
 
+  // Helper to get file type
+  const getFileType = (filename = "") => {
+    const ext = filename.split(".").pop().toLowerCase();
+    return ext;
+  };
+
+  const isPreviewSupported = (filename) => {
+    const ext = getFileType(filename);
+    return ["pdf", "png", "jpg", "jpeg", "gif", "webp"].includes(ext);
+  };
+
   // Fetch all users
   const fetchUsers = async () => {
     try {
@@ -173,12 +184,15 @@ export default function DocumentManager({ role, companyId }) {
 
   // Preview document
   const previewDoc = async (doc) => {
+    if (!isPreviewSupported(doc.filename)) {
+      alert("Preview is only available for PDF and image files.");
+      return;
+    }
+
     try {
       const res = await api.get(
         `/admin/companies/${selectedCompany}/documents/${doc.id}`,
-        {
-          responseType: "blob", // important for files
-        }
+        { responseType: "blob" }
       );
 
       const url = URL.createObjectURL(res.data);
@@ -456,11 +470,22 @@ export default function DocumentManager({ role, companyId }) {
 
                         <button
                           onClick={() => previewDoc(doc)}
-                          className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors"
-                          title="Preview"
+                          disabled={!isPreviewSupported(doc.filename)}
+                          className={`p-1 rounded transition-colors
+    ${
+      isPreviewSupported(doc.filename)
+        ? "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+        : "text-gray-300 cursor-not-allowed"
+    }`}
+                          title={
+                            isPreviewSupported(doc.filename)
+                              ? "Preview"
+                              : "Preview not supported"
+                          }
                         >
                           <Eye size={16} />
                         </button>
+
                         <button
                           onClick={() => downloadDoc(doc)}
                           className="text-green-600 hover:text-green-800 p-1 hover:bg-green-50 rounded transition-colors"
@@ -504,11 +529,19 @@ export default function DocumentManager({ role, companyId }) {
               </button>
             </div>
             <div className="flex-1 overflow-hidden p-2 sm:p-4">
-              <iframe
-                src={preview.url}
-                className="w-full h-full border-0 rounded"
-                title="Document Preview"
-              />
+              {getFileType(preview.name) === "pdf" ? (
+                <iframe
+                  src={preview.url}
+                  className="w-full h-full border-0 rounded"
+                  title="PDF Preview"
+                />
+              ) : (
+                <img
+                  src={preview.url}
+                  alt={preview.name}
+                  className="max-w-full max-h-full mx-auto object-contain"
+                />
+              )}
             </div>
           </div>
         </div>

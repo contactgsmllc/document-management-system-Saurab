@@ -78,6 +78,7 @@ public class CompanyService {
         res.setId(company.getId());
         res.setName(company.getName());
         res.setAddress(company.getAddress());
+        res.setCity(company.getCity());
         res.setState(company.getState());
         res.setZipCode(company.getZipCode());
         res.setContact_person(company.getContactPerson());

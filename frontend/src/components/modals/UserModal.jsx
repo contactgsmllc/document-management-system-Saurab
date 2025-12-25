@@ -8,24 +8,39 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     companyId: "",
     firstName: "",
     middleName: "",
     lastName: "",
   });
 
-  useEffect(() => {
-    if (user) {
-      setForm({
-        email: user.email,
-        password: "",
-        companyId: user.company?.id || "",
-        firstName: user.firstName || "",
-        middleName: user.middleName || "",
-        lastName: user.lastName || "",
-      });
-    }
-  }, [user]);
+ 
+ useEffect(() => {
+  if (user) {
+    setForm({
+      email: user.email,
+      password: "",
+      confirmPassword: "",
+      companyId: user.company?.id || "",
+      firstName: user.firstName || "",
+      middleName: user.middleName || "",
+      lastName: user.lastName || "",
+    });
+  } else {
+    setForm({
+      email: "",
+      password: "",
+      confirmPassword: "",
+      companyId: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+    });
+  }
+}, [user, open]);
+
+
 
   const [companies, setCompanies] = useState([]);
   const [loadingCompanies, setLoadingCompanies] = useState(false);
@@ -44,6 +59,14 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
       return alert("Please fill all required fields");
     }
 
+ // password required
+ if (!isEdit && !form.password){
+  return alert("password is required");
+ }
+// password match
+ if (form.password && form.password !== form.confirmPassword) {
+    return alert("Passwords do not match");
+  }
     try {
       if (isEdit) {
         await api.put(`/admin/users/${user.id}`, {
@@ -84,7 +107,7 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-xl">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-linear-to-r from-purple-50 to-pink-50 rounded-t-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <User className="w-5 h-5 text-purple-600" />
@@ -163,7 +186,7 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {isEdit ? "New Password " : "Password *"}
             </label>
-            <div className="relative">
+            <div className="relative mb-3">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 placeholder={isEdit ? "New Password " : "Password"}
@@ -172,7 +195,23 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               />
+               
             </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+             Confirm Password *
+               </label>
+               <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+             type="password"
+             placeholder="Confirm Password"
+              value={form.confirmPassword}
+               onChange={(e) =>
+             setForm({ ...form, confirmPassword: e.target.value })
+              }
+             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            />
+           </div>
           </div>
 
           {/* Company */}

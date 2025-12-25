@@ -1,9 +1,13 @@
 package com.document.management.exception;
 
+import com.document.management.dto.ApiError;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,101 +16,148 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Validation errors (400)
+    /* ---------------- COMMON BUILDER ---------------- */
+
+    private ResponseEntity<ApiError> buildError(
+            HttpStatus status,
+            String message,
+            Object details) {
+
+        ApiError error = ApiError.builder()
+                .timestamp(Instant.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .details(details)
+                .build();
+
+        return new ResponseEntity<>(error, status);
+    }
+
+    /* ---------------- VALIDATION ---------------- */
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errors);
+    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        DefaultMessageSourceResolvable::getDefaultMessage,
+                        (a, b) -> a
+                ));
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                errors
+        );
     }
 
-    // DB duplicates / constraints
+    /* ---------------- DATA INTEGRITY ---------------- */
+
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleDuplicate(DataIntegrityViolationException ex) {
+    public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex) {
+
+        log.warn("Data integrity violation", ex);
+
         if (ex.getMessage() != null && ex.getMessage().contains("users_email_key")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                    "timestamp", Instant.now(),
-                    "status", HttpStatus.CONFLICT.value(),
-                    "error", "Conflict",
-                    "message", "Email already registered"
-            ));
+            return buildError(
+                    HttpStatus.CONFLICT,
+                    "Email already registered",
+                    null
+            );
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "timestamp", Instant.now(),
-                "status", HttpStatus.BAD_REQUEST.value(),
-                "error", "Bad Request",
-                "message", "Data integrity violation"
-        ));
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Invalid data provided",
+                null
+        );
     }
 
-    // Business rule violations (403)
+    /* ---------------- BUSINESS / SECURITY ---------------- */
+
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<?> handleForbiddenException(ForbiddenException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", status.value(),
-                "error", status.getReasonPhrase(),
-                "message", ex.getMessage()
+    public ResponseEntity<ApiError> handleForbidden(ForbiddenException ex) {
+        return buildError(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                null
         );
-        return new ResponseEntity<>(body, status);
-    }
-    @ExceptionHandler({ MaxUploadSizeExceededException.class, MultipartException.class })
-    public ResponseEntity<?> handleMultipartExceptions(Exception ex) {
-
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", status.value(),
-                "error", status.getReasonPhrase(),
-                "message", "File too large or invalid multipart request"
-        );
-
-        return new ResponseEntity<>(body, status);
-    }
-    // Handle exceptions where controller/service set a specific ResponseStatus
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {
-        HttpStatus status = (HttpStatus) ex.getStatusCode();
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", status.value(),
-                "error", status.getReasonPhrase(),
-                "message", ex.getReason() == null ? ex.getMessage() : ex.getReason()
-        );
-        return new ResponseEntity<>(body, status);
     }
 
-    // Spring Security access denied (fallback for security exceptions)
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", status.value(),
-                "error", status.getReasonPhrase(),
-                "message", ex.getMessage()
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
+        return buildError(
+                HttpStatus.FORBIDDEN,
+                "Access denied",
+                null
         );
-        return new ResponseEntity<>(body, status);
     }
 
-    // Generic fallback - keeps previous behavior but returns structured JSON
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleUnknown(Exception ex) {
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "error", "Internal Server Error",
-                "message", ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage()
+    /* ---------------- MULTIPART ---------------- */
+
+    @ExceptionHandler({ MaxUploadSizeExceededException.class, MultipartException.class })
+    public ResponseEntity<ApiError> handleMultipart(Exception ex) {
+
+        log.warn("Multipart error", ex);
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "File too large or invalid multipart request",
+                null
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    /* ---------------- RESPONSE STATUS ---------------- */
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatus(ResponseStatusException ex) {
+
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+
+        return buildError(
+                status,
+                ex.getReason() != null ? ex.getReason() : status.getReasonPhrase(),
+                null
+        );
+    }
+
+    /* ---------------- RUNTIME EXCEPTION (IMPORTANT) ---------------- */
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiError> handleRuntime(RuntimeException ex) {
+
+        log.error("Unhandled RuntimeException", ex);
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                null
+        );
+    }
+
+    /* ---------------- FALLBACK ---------------- */
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleUnknown(Exception ex) {
+
+        log.error("Unhandled exception", ex);
+
+        return buildError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal server error",
+                null
+        );
     }
 }
+

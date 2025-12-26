@@ -12,7 +12,7 @@ public class CompanyResponse {
     private String city;
     private String state;
     private String zipCode;
-    private String contact_person;
+    private String contactPerson;
     private String email;
     private String phone;
     private Instant createdAt;

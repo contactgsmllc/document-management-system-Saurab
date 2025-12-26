@@ -171,7 +171,7 @@ const DetailsModal = ({
                     <div>
                       <p className="text-xs text-gray-500">Contact Person</p>
                       <p className="text-sm font-medium text-gray-900">
-                        {data.company.contactPerson || data.company.contact_person}
+                        {data.company.contactPerson}
                       </p>
                     </div>
                   </div>
@@ -230,13 +230,13 @@ const DetailsModal = ({
                   </div>
                 )}
 
-                {(data.contactPerson || data.contact_person) && (
+                {data.contactPerson && (
                   <div className="flex items-start gap-3">
                     <User className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
                     <div className="flex-1">
                       <p className="text-xs text-gray-500">Contact Person</p>
                       <p className="text-sm font-medium text-gray-900">
-                        {data.contactPerson || data.contact_person}
+                        {data.contactPerson}
                       </p>
                     </div>
                   </div>

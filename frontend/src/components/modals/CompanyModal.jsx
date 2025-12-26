@@ -12,7 +12,7 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
     city: "",
     state: "",
     zipCode: "",
-    contact_person: "",
+    contactPerson: "",
     email: "",
     phone: "",
     einNumber: "",
@@ -33,7 +33,7 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
           city: data.city || "",
           state: data.state || "",
           zipCode: data.zipCode || "",
-          contact_person: data.contact_person || "",
+          contactPerson: data.contactPerson || "",
           email: data.email || "",
           phone: data.phone || "",
           einNumber: data.einNumber || "",
@@ -90,8 +90,9 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
 
       onSuccess();
       onClose();
-    } catch {
-      alert("Failed to save company");
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || "Failed to save company";
+      alert(errorMessage);
     }
   };
 
@@ -232,9 +233,9 @@ const CompanyModal = ({ open, onClose, companyId, onSuccess }) => {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   placeholder="Contact Person"
-                  value={form.contact_person}
+                  value={form.contactPerson}
                   onChange={(e) =>
-                    setForm({ ...form, contact_person: e.target.value })
+                    setForm({ ...form, contactPerson: e.target.value })
                   }
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />

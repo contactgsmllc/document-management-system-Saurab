@@ -25,7 +25,7 @@ public class CompanyAdminController {
     @PostMapping
     public Company createCompany(@RequestBody Company company) {
         if (companyService.existsInactiveCompanyWithName(company.getName())) {
-            throw new RuntimeException("Company with the same name already exists with Inactive status.");
+            throw new RuntimeException("Company is in Inactive status. Try reactivating it.");
         }
         Company saved = companyRepo.save(company);
         return saved;

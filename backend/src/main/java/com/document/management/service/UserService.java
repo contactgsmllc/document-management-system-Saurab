@@ -36,6 +36,10 @@ public class UserService {
 
     public UserResponse register(RegisterRequest req) {
 
+        if (userRepo.existsByEmailAndCompanyId(req.getEmail(), req.getCompanyId())) {
+            throw new RuntimeException("Email already exist for this company");
+        }
+
         User user = new User();
 
         user.setEmail(req.getEmail());
@@ -108,19 +112,13 @@ public class UserService {
     }
 
     public List<UserResponse> listAllUsers() {
-        return userRepo.findAll().stream()
+        return userRepo.findAllUsersOrderByCreatedAtDesc().stream()
                 .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(), u.getFirstName(), u.getMiddleName(),u.getLastName()))
                 .collect(Collectors.toList());
     }
 
-    public List<UserResponse> listActiveUsers() {
-        return userRepo.findAllUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
-                .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(),u.getFirstName(),u.getMiddleName(),u.getLastName()))
-                .collect(Collectors.toList());
-    }
-
     public List<UserResponse> listPendingUsers() {
-        return userRepo.findPendingUsersByStatusOrderByCreatedAtDesc(Status.ACTIVE).stream()
+        return userRepo.findPendingUsersByStatusOrderByCreatedAtDesc().stream()
                 .map(u -> new UserResponse(u.getId(), u.getEmail(), u.getRole(), u.getCompany(), u.isApproved(), u.getStatus(),u.getFirstName(),u.getMiddleName(),u.getLastName()))
                 .collect(Collectors.toList());
     }
@@ -151,10 +149,7 @@ public class UserService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "User not found");
-        }
+
 
             // Map entity -> DTO (do NOT expose password or sensitive fields)
             return new UserResponse(

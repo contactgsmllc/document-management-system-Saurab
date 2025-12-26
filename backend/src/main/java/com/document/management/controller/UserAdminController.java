@@ -40,6 +40,11 @@ public class UserAdminController {
 
     @PostMapping
     public User createUser(@RequestBody RegisterRequest req) {
+
+        if (userRepo.existsByEmailAndCompanyId(req.getEmail(), req.getCompanyId())) {
+            throw new RuntimeException("Email already exist for this company");
+        }
+
         User user = new User();
         user.setEmail(req.getEmail());
         user.setPassword(passwordEncoder.encode(req.getPassword()));

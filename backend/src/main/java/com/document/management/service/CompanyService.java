@@ -81,7 +81,7 @@ public class CompanyService {
         res.setCity(company.getCity());
         res.setState(company.getState());
         res.setZipCode(company.getZipCode());
-        res.setContact_person(company.getContactPerson());
+        res.setContactPerson(company.getContactPerson());
         res.setEmail(company.getEmail());
         res.setPhone(company.getPhone());
         res.setCreatedAt(company.getCreatedAt());

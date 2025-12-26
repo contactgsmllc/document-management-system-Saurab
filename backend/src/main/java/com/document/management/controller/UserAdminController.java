@@ -33,13 +33,18 @@ public class UserAdminController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping
+    @GetMapping("/list")
     public List<UserResponse> listUsers() {
         return userService.listAllUsers();
     }
 
     @PostMapping
     public User createUser(@RequestBody RegisterRequest req) {
+
+        if (userRepo.existsByEmailAndCompanyId(req.getEmail(), req.getCompanyId())) {
+            throw new RuntimeException("Email already exist for this company");
+        }
+
         User user = new User();
         user.setEmail(req.getEmail());
         user.setPassword(passwordEncoder.encode(req.getPassword()));

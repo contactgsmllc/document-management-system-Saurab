@@ -8,18 +8,24 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../api/axios";
 
-export default function DocumentManager({ role, companyId }) {
+export default function DocumentManager({ role, companyId, companies: companiesProp = [] }) {
   const [documents, setDocuments] = useState([]);
-  const [companies, setCompanies] = useState([]);
+  const [companies, setCompanies] = useState(companiesProp);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchEmail, setSearchEmail] = useState("");
   const [selectedCompany, setSelectedCompany] = useState(companyId);
+
+  const companiesFetchedRef = useRef(false);
+  const usersFetchedRef = useRef(false);
+  const lastSelectedCompanyRef = useRef(null);
+  const companiesFetchingRef = useRef(false);
+  const usersFetchingRef = useRef(false);
 
   const token = localStorage.getItem("authToken");
 
@@ -28,17 +34,35 @@ export default function DocumentManager({ role, companyId }) {
     "Content-Type": "application/json",
   };
 
+  // Initialize companies from prop or fetch if needed (only once)
   useEffect(() => {
-    if (role !== "USER") fetchCompanies();
-  }, []);
+    if (companiesProp && companiesProp.length > 0) {
+      // Companies provided as prop, use them and mark as fetched
+      setCompanies(companiesProp);
+      companiesFetchedRef.current = true;
+      companiesFetchingRef.current = false;
+    } else if (role !== "USER" && !companiesFetchedRef.current && !companiesFetchingRef.current) {
+      // No prop provided and not fetched/fetching yet, fetch now
+      companiesFetchingRef.current = true;
+      fetchCompanies();
+    }
+  }, [companiesProp, role]);
 
+  // Fetch documents when company changes
   useEffect(() => {
-    if (selectedCompany) fetchDocuments();
+    if (selectedCompany && selectedCompany !== lastSelectedCompanyRef.current) {
+      fetchDocuments();
+      lastSelectedCompanyRef.current = selectedCompany;
+    }
   }, [selectedCompany]);
 
+  // Fetch users only once
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (role !== "USER" && !usersFetchedRef.current && !usersFetchingRef.current) {
+      usersFetchingRef.current = true;
+      fetchUsers();
+    }
+  }, [role]);
   // Helper to get user email by ID
   const getUserEmail = (id) => {
     const user = users.find((u) => u.id === id);
@@ -56,25 +80,42 @@ export default function DocumentManager({ role, companyId }) {
     return ["pdf", "png", "jpg", "jpeg", "gif", "webp"].includes(ext);
   };
 
-  // Fetch all users
+  // Fetch all users (admin endpoint only)
   const fetchUsers = async () => {
+    // Double check to prevent race conditions
+    if (usersFetchedRef.current || usersFetchingRef.current) return;
+    
+    usersFetchingRef.current = true;
+    
     try {
-      const res = await api.get("/users/companies/list");
-      setUsers(res.data); // ✅ FIX
+      const res = await api.get("/admin/users/list");
+      setUsers(res.data);
+      usersFetchedRef.current = true;
     } catch (error) {
       console.error("Failed to fetch users", error);
+      usersFetchedRef.current = false; // Reset on error so it can retry
+    } finally {
+      usersFetchingRef.current = false;
     }
   };
 
-  // Fetch companies
-
+  // Fetch companies (only if not provided as prop)
   const fetchCompanies = async () => {
+    // Double check to prevent race conditions
+    if (companiesFetchedRef.current || companiesFetchingRef.current) return;
+    if (companiesProp && companiesProp.length > 0) return; // Don't fetch if prop exists
+    
+    companiesFetchingRef.current = true;
+    
     try {
       const { data } = await api.get("/admin/companies/list");
-
       setCompanies(data);
+      companiesFetchedRef.current = true;
     } catch (error) {
       console.error("Failed to fetch companies", error);
+      companiesFetchedRef.current = false; // Reset on error so it can retry
+    } finally {
+      companiesFetchingRef.current = false;
     }
   };
 

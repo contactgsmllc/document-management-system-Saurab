@@ -47,9 +47,4 @@ public class UserController {
     public List<Company> listCompanies() {
         return companyRepo.findByStatusOrderByCreatedAtDesc(Status.ACTIVE);
     }
-
-    @GetMapping("/list")
-    public List<UserResponse> listAll() {
-        return service.listAllUsers();
-    }
 }

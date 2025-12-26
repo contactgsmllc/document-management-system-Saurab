@@ -1,5 +1,5 @@
 import React from "react";
-import { X, User, Building2, Mail, MapPin, Phone, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { X, User, Building2, Mail, MapPin, Phone, Calendar, CheckCircle, XCircle, Hash } from "lucide-react";
 
 const DetailsModal = ({
   open,
@@ -134,6 +134,48 @@ const DetailsModal = ({
                       </div>
                     </div>
                   )}
+
+                  {data.company.city && (
+                    <div className="flex items-start gap-3">
+                      <MapPin className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                      <div>
+                        <p className="text-xs text-gray-500">City</p>
+                        <p className="text-sm font-medium text-gray-900">{data.company.city}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {data.company.state && (
+                    <div className="flex items-start gap-3">
+                      <MapPin className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                      <div>
+                        <p className="text-xs text-gray-500">State</p>
+                        <p className="text-sm font-medium text-gray-900">{data.company.state}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {data.company.zipCode && (
+                    <div className="flex items-start gap-3">
+                      <Hash className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                      <div>
+                        <p className="text-xs text-gray-500">ZIP Code</p>
+                        <p className="text-sm font-medium text-gray-900">{data.company.zipCode}</p>
+                      </div>
+                    </div>
+                  )}
+
+                {data.company.contactPerson && (
+                  <div className="flex items-start gap-3">
+                    <User className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                    <div>
+                      <p className="text-xs text-gray-500">Contact Person</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {data.company.contactPerson}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 </div>
               )}
             </div>
@@ -158,12 +200,44 @@ const DetailsModal = ({
                   </div>
                 )}
 
+                {data.city && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">City</p>
+                      <p className="text-sm font-medium text-gray-900">{data.city}</p>
+                    </div>
+                  </div>
+                )}
+
                 {data.state && (
                   <div className="flex items-start gap-3">
                     <MapPin className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
                     <div className="flex-1">
                       <p className="text-xs text-gray-500">State</p>
                       <p className="text-sm font-medium text-gray-900">{data.state}</p>
+                    </div>
+                  </div>
+                )}
+
+                {data.zipCode && (
+                  <div className="flex items-start gap-3">
+                    <Hash className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">ZIP Code</p>
+                      <p className="text-sm font-medium text-gray-900">{data.zipCode}</p>
+                    </div>
+                  </div>
+                )}
+
+                {data.contactPerson && (
+                  <div className="flex items-start gap-3">
+                    <User className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">Contact Person</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {data.contactPerson}
+                      </p>
                     </div>
                   </div>
                 )}

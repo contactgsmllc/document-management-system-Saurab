@@ -90,8 +90,9 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
 
       onSuccess();
       onClose();
-    } catch {
-      alert("Failed to save user");
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || "Failed to save user";
+      alert(errorMessage);
     }
   };
 

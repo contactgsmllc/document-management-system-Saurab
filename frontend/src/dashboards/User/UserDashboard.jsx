@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import api from "../../api/axios.js";
 import {
   Upload,
@@ -44,8 +44,6 @@ const getFileIcon = (contentType) => {
   return <FileText className="w-5 h-5 text-gray-500" />;
 };
 
-//  Main Component
-
 export default function UserDashboard() {
   const [documents, setDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -55,84 +53,51 @@ export default function UserDashboard() {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("documents");
-  const lastFetchedTabRef = useRef(null);
-  const isFetchingRef = useRef(false);
-
-
 
   // Get companyId and userId from stored userData
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const companyId = userData.companyId;
   const userId = userData.userId;
 
-  // Fetch documents
   const fetchDocuments = useCallback(async () => {
     if (!companyId) return;
-    
-    // Prevent concurrent/duplicate calls
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-    
-    if (!uploading) {
-      setLoading(true);
-    }
+    setLoading(true);
     setError("");
 
     try {
-      const response = await api.get(
-        `/users/companies/${companyId}/documents`
-      );
+      const response = await api.get(`/users/companies/${companyId}/documents`);
 
       if (response.data && Array.isArray(response.data)) {
-        let mappedData = response.data.map((doc) => {
-          return {
-            id: doc.id,
-            filename: doc.filename || doc.name,
-            size: doc.size,
-            contentType: doc.contentType,
-            uploadedBy: doc.uploadedBy || doc.user || "Unknown User",
-            uploadedAt: doc.uploadedAt || doc.createdAt,
-          };
-        });
+        let mappedData = response.data.map((doc) => ({
+          id: doc.id,
+          filename: doc.filename || doc.name,
+          size: doc.size,
+          contentType: doc.contentType,
+          uploadedBy: doc.uploadedBy || "Unknown User",
+          uploadedAt: doc.uploadedAt || doc.createdAt,
+          status: doc.status || "ACTIVE",
+        }));
 
-        mappedData.sort((a, b) => {
-          const dateA = new Date(a.uploadedAt).getTime();
-          const dateB = new Date(b.uploadedAt).getTime();
-          return dateB - dateA;
-        });
+        mappedData.sort(
+          (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+        );
 
         setDocuments(mappedData);
       } else {
         setDocuments([]);
       }
     } catch (err) {
-      if (err.response?.status === 401) {
-        setError("Session expired. Please login again.");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000);
-      } else if (err.response?.status === 403) {
-        setError("Access denied. You don't have permission.");
-      } else {
-        setError(err.response?.data?.message || "Failed to load documents");
-      }
+      setError(err.response?.data?.message || "Failed to load documents");
     } finally {
       setLoading(false);
-      isFetchingRef.current = false;
     }
-  }, [companyId, uploading]);
+  }, [companyId]);
 
   useEffect(() => {
-    // Only fetch if we haven't already fetched for this tab/company combination
     if (activeTab === "documents" && companyId) {
-      const fetchKey = `${activeTab}-${companyId}`;
-      if (lastFetchedTabRef.current !== fetchKey) {
-        lastFetchedTabRef.current = fetchKey;
-        fetchDocuments();
-      }
+      fetchDocuments();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, companyId]);
+  }, [activeTab, fetchDocuments, companyId]);
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0 || !companyId) return;
@@ -141,18 +106,13 @@ export default function UserDashboard() {
     setError("");
 
     try {
-      const uploadPromises = [];
-
-      for (const file of Array.from(files)) {
+      const uploadPromises = Array.from(files).map((file) => {
         const formData = new FormData();
         formData.append("file", file);
-
-        uploadPromises.push(
-          api.post(`/users/companies/${companyId}/documents`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-        );
-      }
+        return api.post(`/users/companies/${companyId}/documents`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      });
 
       await Promise.all(uploadPromises);
       await fetchDocuments();
@@ -164,44 +124,18 @@ export default function UserDashboard() {
     }
   };
 
-  const deleteDocument = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this document?"))
-      return;
-    setError("");
-    try {
-      await api.delete(`/users/companies/${companyId}/documents/${id}`);
-      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
-    } catch (err) {
-      setError(err.response?.data?.message || "Delete failed");
-    }
-  };
-
   const previewDocument = async (doc) => {
     setPreviewLoading(true);
-    setPreview({
-      name: doc.filename || doc.name || "Document",
-      url: null,
-      type: null,
-    });
+    setPreview({ name: doc.filename, url: null, type: null });
     setError("");
 
     try {
-      const response = await api.get(
-        `/users/companies/${companyId}/documents/${doc.id}`,
-        {
-          responseType: "blob",
-        }
-      );
-      const blob = response.data;
-      const fileType =
-        blob.type || doc.contentType || "application/octet-stream";
-      const url = URL.createObjectURL(blob);
-
-      setPreview({
-        name: doc.filename || doc.name || "Document",
-        url: url,
-        type: fileType,
+      const response = await api.get(`/users/companies/${companyId}/documents/${doc.id}`, {
+        responseType: "blob",
       });
+      const blob = response.data;
+      const url = URL.createObjectURL(blob);
+      setPreview({ name: doc.filename, url, type: blob.type });
     } catch (err) {
       setError(err.response?.data?.message || "Preview failed");
       setPreview(null);
@@ -213,23 +147,48 @@ export default function UserDashboard() {
   const downloadDocument = async (doc) => {
     setError("");
     try {
-      const response = await api.get(
-        `/users/companies/${companyId}/documents/${doc.id}`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await api.get(`/users/companies/${companyId}/documents/${doc.id}`, {
+        responseType: "blob",
+      });
       const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = doc.filename || doc.name || "download";
+      link.download = doc.filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       setTimeout(() => window.URL.revokeObjectURL(url), 100);
     } catch (err) {
       setError(err.response?.data?.message || "Download failed");
+    }
+  };
+
+  const toggleDocumentStatus = async (doc) => {
+    try {
+      const newStatus = doc.status.toLowerCase() === "active" ? "inactive" : "active";
+
+      if (newStatus === "active") {
+        await api.put(`/users/companies/${companyId}/documents/${doc.id}/reactivate`);
+      } else {
+        await api.delete(`/users/companies/${companyId}/documents/${doc.id}`);
+      }
+
+      setDocuments((prev) =>
+        prev.map((d) => (d.id === doc.id ? { ...d, status: newStatus.toUpperCase() } : d))
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update status");
+    }
+  };
+
+  const deleteDocument = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this document?")) return;
+    try {
+      await api.delete(`/users/companies/${companyId}/documents/${id}/permanent`);
+      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    } catch (err) {
+      setError(err.response?.data?.message || "Delete failed");
     }
   };
 
@@ -253,79 +212,55 @@ export default function UserDashboard() {
         handleLogout={handleLogout}
       />
 
-      {/* Main Content */}
       <main className="flex-1 lg:ml-64 transition-all duration-300">
-        {/* Header */}
         <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
           <div className="px-4 sm:px-6 lg:px-8 py-4 ml-16 lg:ml-0">
             <h1 className="text-xl sm:text-2xl font-bold text-blue-900">
-              {activeTab === "documents" && "My Documents"}
-              {activeTab === "upload" && "Upload Files"}
+              {activeTab === "documents" ? "My Documents" : "Upload Files"}
             </h1>
           </div>
         </header>
 
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
               <div className="flex justify-between items-center">
                 <span>{error}</span>
-                <button
-                  onClick={() => setError("")}
-                  className="text-red-500 hover:text-red-700"
-                >
+                <button onClick={() => setError("")} className="text-red-500 hover:text-red-700">
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
           )}
 
-          {/* Upload Tab */}
           {activeTab === "upload" && (
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-              <div className="p-8">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
-                  <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    Upload Documents
-                  </h3>
-                  <p className="text-gray-500 mb-6">
-                    Drag and drop files here, or click to browse
-                  </p>
-
-                  <label className="inline-flex items-center px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-gray-800 cursor-pointer transition-colors">
-                    <Upload className="w-5 h-5 mr-2" />
-                    <span className="font-medium">Browse Files</span>
-                    <input
-                      type="file"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => handleFileUpload(e.target.files)}
-                      onClick={(e) => (e.target.value = null)}
-                      accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip"
-                    />
-                  </label>
-
-                  <p className="text-xs text-gray-500 mt-4">
-                    Max file size: 50MB • Supported: PDF, Images, Office files,
-                    TXT, CSV, ZIP
-                  </p>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm p-8 text-center">
+              <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Upload Documents</h3>
+              <p className="text-gray-500 mb-6">
+                Drag and drop files here, or click to browse
+              </p>
+              <label className="inline-flex items-center px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-gray-800 cursor-pointer transition-colors">
+                <Upload className="w-5 h-5 mr-2" />
+                <span className="font-medium">Browse Files</span>
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFileUpload(e.target.files)}
+                  onClick={(e) => (e.target.value = null)}
+                  accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.csv,.zip"
+                />
+              </label>
+              {uploading && (
+                <div className="mt-6 bg-blue-50 p-4 rounded-lg flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 mr-3" />
+                  <span className="text-blue-700 font-medium">Uploading files...</span>
                 </div>
-
-                {uploading && (
-                  <div className="mt-6 bg-blue-50 p-4 rounded-lg flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-600 mr-3" />
-                    <span className="text-blue-700 font-medium">
-                      Uploading files...
-                    </span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           )}
 
-          {/* Documents Tab */}
           {activeTab === "documents" && (
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
               {loading ? (
@@ -336,12 +271,8 @@ export default function UserDashboard() {
               ) : documents.length === 0 ? (
                 <div className="p-12 text-center text-gray-500">
                   <Folder className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    No documents found
-                  </h3>
-                  <p className="text-gray-500 mb-6">
-                    Upload your first document to get started
-                  </p>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No documents found</h3>
+                  <p className="text-gray-500 mb-6">Upload your first document to get started</p>
                   <button
                     onClick={() => setActiveTab("upload")}
                     className="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
@@ -354,79 +285,47 @@ export default function UserDashboard() {
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                          File Name
-                        </th>
-                        <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                          Size
-                        </th>
-                        <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                          Uploaded By
-                        </th>
-                        <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                          Date
-                        </th>
-                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase">
-                          Actions
-                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">File Name</th>
+                        <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Size</th>
+                        <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {documents.map((doc) => (
                         <tr key={doc.id} className="hover:bg-gray-50">
-                          <td className="px-4 sm:px-6 py-4">
+                          <td className="px-4 py-4">
                             <div className="flex items-center gap-3">
                               {getFileIcon(doc.contentType)}
                               <div>
-                                <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                                  {doc.filename}
-                                </div>
-                                <div className="md:hidden text-xs text-gray-500 mt-1">
-                                  {formatFileSize(doc.size)}
-                                </div>
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{doc.filename}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="hidden md:table-cell px-6 py-4 text-sm text-gray-600">
-                            {formatFileSize(doc.size)}
-                          </td>
-                          <td className="hidden lg:table-cell px-6 py-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              <span
-                                className="truncate max-w-[150px]"
-                                title={doc.uploadedBy}
-                              >
-                                {doc.uploadedBy}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="hidden sm:table-cell px-6 py-4 text-xs text-gray-600">
-                            {formatDateTime(doc.uploadedAt)}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 text-right">
+                          <td className="hidden md:table-cell px-6 py-4 text-sm text-gray-600">{formatFileSize(doc.size)}</td>
+                          <td className="hidden sm:table-cell px-6 py-4 text-xs text-gray-600">{formatDateTime(doc.uploadedAt)}</td>
+                          <td className="px-4 py-4 text-right">
                             <div className="flex justify-end gap-2">
+                              <button onClick={() => previewDocument(doc)} className="text-blue-600 hover:text-blue-800" title="Preview"><Eye size={16} /></button>
+                              <button onClick={() => downloadDocument(doc)} className="text-green-600 hover:text-green-800" title="Download"><Download size={16} /></button>
                               <button
-                                onClick={() => previewDocument(doc)}
-                                className="text-blue-600 hover:text-blue-800"
-                                title="Preview"
+                                onClick={() => toggleDocumentStatus(doc)}
+                                className={`px-3 py-1 rounded text-sm font-medium ${
+                                  doc.status.toLowerCase() === "active"
+                                    ? "bg-orange-100 text-orange-800 hover:bg-orange-200"
+                                    : "bg-green-100 text-green-800 hover:bg-green-200"
+                                }`}
                               >
-                                <Eye size={16} />
+                                {doc.status.toLowerCase() === "active" ? "Inactive" : "Active"}
                               </button>
-                              <button
-                                onClick={() => downloadDocument(doc)}
-                                className="text-green-600 hover:text-green-800"
-                                title="Download"
-                              >
-                                <Download size={16} />
-                              </button>
-                              <button
-                                onClick={() => deleteDocument(doc.id)}
-                                className="text-red-600 hover:text-red-800"
-                                title="Delete"
-                              >
-                                <Trash2 size={16} />
-                              </button>
+                             <button
+                           onClick={() => deleteDocument(doc.id)}
+                          className="p-2 rounded bg-red-100 text-red-800 hover:bg-red-200 text-sm flex items-center justify-center"
+                            title="Delete"
+                                >
+                         <Trash2 className="w-4 h-4" />
+                          </button>
+
                             </div>
                           </td>
                         </tr>
@@ -445,9 +344,7 @@ export default function UserDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-xl">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <h3 className="font-semibold text-gray-800 truncate">
-                {preview.name}
-              </h3>
+              <h3 className="font-semibold text-gray-800 truncate">{preview.name}</h3>
               <div className="flex gap-2">
                 {!previewLoading && (
                   <button
@@ -461,11 +358,9 @@ export default function UserDashboard() {
                     }}
                     className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-gray-800 text-sm flex items-center gap-1"
                   >
-                    <Download className="w-4 h-4" />
-                    Download
+                    <Download className="w-4 h-4" /> Download
                   </button>
                 )}
-
                 <button
                   onClick={() => {
                     if (preview.url) URL.revokeObjectURL(preview.url);
@@ -473,8 +368,7 @@ export default function UserDashboard() {
                   }}
                   className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm flex items-center gap-1"
                 >
-                  <X className="w-4 h-4" />
-                  Close
+                  <X className="w-4 h-4" /> Close
                 </button>
               </div>
             </div>
@@ -485,36 +379,17 @@ export default function UserDashboard() {
                   <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
                   <p className="text-gray-600">Preparing preview...</p>
                 </div>
+              ) : preview.type === "application/pdf" ? (
+                <iframe src={preview.url} title={preview.name} className="w-full h-[65vh] border-0" />
+              ) : preview.type.startsWith("image/") ? (
+                <img src={preview.url} alt={preview.name} className="max-w-full max-h-[65vh] mx-auto" />
               ) : (
-                <>
-                  {preview.type === "application/pdf" ? (
-                    <iframe
-                      src={preview.url}
-                      title={preview.name}
-                      className="w-full h-[65vh] border-0"
-                    />
-                  ) : preview.type.startsWith("image/") ? (
-                    <img
-                      src={preview.url}
-                      alt={preview.name}
-                      className="max-w-full max-h-[65vh] mx-auto"
-                    />
-                  ) : (
-                    <div className="text-center py-12">
-                      <p className="text-gray-500 mb-4">
-                        Preview not available for this file type
-                      </p>
-                      <a
-                        href={preview.url}
-                        download={preview.name}
-                        className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-gray-800 inline-flex items-center gap-2"
-                      >
-                        <Download className="w-4 h-4" />
-                        Download File
-                      </a>
-                    </div>
-                  )}
-                </>
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-4">Preview not available for this file type</p>
+                  <a href={preview.url} download={preview.name} className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-gray-800 inline-flex items-center gap-2">
+                    <Download className="w-4 h-4" /> Download File
+                  </a>
+                </div>
               )}
             </div>
           </div>

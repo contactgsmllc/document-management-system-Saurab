@@ -94,11 +94,6 @@ public class UserAdminController {
         user.setApproved(approve);
         return userRepo.save(user);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-        UserResponse res = userService.getUserById(id);
-        return ResponseEntity.ok(res);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

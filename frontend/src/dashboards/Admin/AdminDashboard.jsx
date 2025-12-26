@@ -43,6 +43,7 @@ const AdminDashboard = () => {
 
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const companiesFetchedRef = useRef(false);
   const lastFetchedTabRef = useRef(null);
 
@@ -65,6 +66,8 @@ const AdminDashboard = () => {
 
   const userRole = localStorage.getItem("role");
   const companyId = localStorage.getItem("companyId");
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const currentUserId = userData.userId || userData.id;
 
   const showUserDetails = async (userId) => {
     setDetailsType("user");
@@ -175,6 +178,21 @@ const AdminDashboard = () => {
       lastFetchedTabRef.current = activeTab;
     }
   }, [activeTab]);
+
+  // Fetch current user details
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (currentUserId) {
+        try {
+          const { data } = await api.get(`/users/${currentUserId}`);
+          setCurrentUser(data);
+        } catch (error) {
+          console.error("Failed to fetch current user:", error);
+        }
+      }
+    };
+    fetchCurrentUser();
+  }, [currentUserId]);
 
   // Adjust page when data or tab changes
   useEffect(() => {
@@ -392,8 +410,12 @@ const AdminDashboard = () => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-blue-900">Admin Panel</h2>
-            <p className="text-sm text-gray-500 mt-1">Manage your system</p>
+            <h2 className="text-xl font-bold text-blue-900">
+              {currentUser?.firstName ? `Hi ${currentUser.firstName}` : "Admin Panel"}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {currentUser?.email || "Manage your system"}
+            </p>
           </div>
 
           {/* Navigation */}

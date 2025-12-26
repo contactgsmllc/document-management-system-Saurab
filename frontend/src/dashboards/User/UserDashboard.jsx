@@ -55,6 +55,7 @@ export default function UserDashboard() {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("documents");
+  const [currentUser, setCurrentUser] = useState(null);
   const lastFetchedTabRef = useRef(null);
   const isFetchingRef = useRef(false);
 
@@ -64,6 +65,21 @@ export default function UserDashboard() {
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const companyId = userData.companyId;
   const userId = userData.userId;
+
+  // Fetch current user details
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (userId) {
+        try {
+          const { data } = await api.get(`/users/${userId}`);
+          setCurrentUser(data);
+        } catch (error) {
+          console.error("Failed to fetch current user:", error);
+        }
+      }
+    };
+    fetchCurrentUser();
+  }, [userId]);
 
   // Fetch documents
   const fetchDocuments = useCallback(async () => {
@@ -251,6 +267,7 @@ export default function UserDashboard() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         handleLogout={handleLogout}
+        currentUser={currentUser}
       />
 
       {/* Main Content */}

@@ -6,7 +6,8 @@ export default function Sidebar({
   toggleSidebar, 
   activeTab, 
   setActiveTab, 
-  handleLogout 
+  handleLogout,
+  currentUser
 }) {
   const menuItems = [
     { id: "documents", label: "My Documents", icon: Folder },
@@ -40,8 +41,12 @@ export default function Sidebar({
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-blue-900">User Panel</h2>
-            <p className="text-sm text-gray-500 mt-1">Manage your files</p>
+            <h2 className="text-xl font-bold text-blue-900">
+              {currentUser?.firstName ? `Hi ${currentUser.firstName}` : "User Panel"}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {currentUser?.email || "Manage your files"}
+            </p>
           </div>
 
           {/* Navigation */}

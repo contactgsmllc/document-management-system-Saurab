@@ -61,7 +61,18 @@ const DetailsModal = ({
                 <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
                   User Information
                 </h4>
-                
+                <div className="flex items-start gap-3">
+  <User className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+  <div>
+    <p className="text-xs text-gray-500">Name</p>
+    <p className="text-sm font-medium text-gray-900">
+      {[data.firstName, data.middleName, data.lastName]
+        .filter(Boolean)
+        .join(" ")}
+    </p>
+  </div>
+</div>
+
                 <div className="flex items-start gap-3">
                   <Mail className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
                   <div>

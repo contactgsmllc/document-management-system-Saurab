@@ -13,6 +13,19 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+}, (error) => Promise.reject(error)
+);
+
+//handle expired token
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

@@ -50,7 +50,8 @@ public class DocumentService {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.ms-excel"
     );
-    private final long maxSizeBytes = 10L * 1024 * 1024; // 10 MB
+    @Value("${document.upload.max-size-bytes}")
+    private long maxSizeBytes; // 10 MB
 
     public DocumentService(DocumentRepository docRepo,
                            CompanyRepository companyRepo,
@@ -159,7 +160,8 @@ public class DocumentService {
                         d.getContentType(),
                         d.getSize(),
                         d.getUploadedAt(),
-                        d.getUploadedByUserId()
+                        d.getUploadedByUserId(),
+                        d.getStatus()
                 ))
                 .collect(Collectors.toList());
     }
@@ -217,4 +219,18 @@ public class DocumentService {
 
         docRepo.delete(doc);
     }
+    @Transactional
+    public Document reactivateDocument(Long documentId) {
+
+        Document doc = docRepo.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        if (doc.getStatus() == Status.ACTIVE) {
+            throw new RuntimeException("Document is already active");
+        }
+
+        doc.setStatus(Status.ACTIVE);
+        return docRepo.save(doc);
+    }
+
 }

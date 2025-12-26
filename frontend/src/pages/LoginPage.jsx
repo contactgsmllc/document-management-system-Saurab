@@ -39,7 +39,7 @@ function LoginPage() {
   setLoading(true);
 
   try {
-    const resp = await api.post("/api/users/login", {
+    const resp = await api.post("/users/login", {
       email: formData.email,
       password: formData.password,
     });

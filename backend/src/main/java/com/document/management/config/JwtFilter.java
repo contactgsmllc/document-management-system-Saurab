@@ -1,6 +1,8 @@
 package com.document.management.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
@@ -26,26 +28,45 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
 
-            List<GrantedAuthority> authorities = List.of(
-                    new SimpleGrantedAuthority(claims.get("role", String.class))
-            );
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(), null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            request.setAttribute("claims", claims);
+            try {
+                Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
+
+                List<GrantedAuthority> authorities = List.of(
+                        new SimpleGrantedAuthority(claims.get("role", String.class))
+                );
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                claims.getSubject(), null, authorities);
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                request.setAttribute("claims", claims);
+
+            } catch (ExpiredJwtException ex) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("JWT token expired");
+                return;
+            } catch (JwtException ex) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid JWT token");
+                return;
+            }
         }
+
         chain.doFilter(request, response);
     }
 }

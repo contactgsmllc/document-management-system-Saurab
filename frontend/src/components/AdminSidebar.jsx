@@ -1,5 +1,4 @@
-import React from "react";
-import { Users, Building2, UserPlus, LogOut, Menu, X ,FileText} from "lucide-react";
+import { Building2, FileText, LogOut, Menu, UserPlus, Users, X } from "lucide-react";
 
 const AdminSidebar = ({
   activeTab,

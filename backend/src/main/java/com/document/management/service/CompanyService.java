@@ -29,6 +29,10 @@ public class CompanyService {
         return companyRepo.existsByNameAndStatus(name, Status.INACTIVE);
     }
 
+    public boolean existsActiveCompanyWithName(String name) {
+        return companyRepo.existsByNameAndStatus(name, Status.ACTIVE);
+    }
+
     @Transactional
     public void softDeleteCompany(Long id) {
 
@@ -69,15 +73,12 @@ public class CompanyService {
         Company company = companyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
 
-        if (company.getStatus() != Status.ACTIVE) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Company not found");
-        }
 
         CompanyResponse res = new CompanyResponse();
         res.setId(company.getId());
         res.setName(company.getName());
         res.setAddress(company.getAddress());
+        res.setCity(company.getCity());
         res.setState(company.getState());
         res.setZipCode(company.getZipCode());
         res.setContact_person(company.getContactPerson());

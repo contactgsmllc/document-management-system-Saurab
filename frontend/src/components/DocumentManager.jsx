@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import api from "../api/axios";
 import {
-  Upload,
+  Calendar,
   Download,
   Eye,
-  Trash2,
-  X,
-  Loader2,
   FileText,
-  Calendar,
+  Loader2,
+  Trash2,
+  Upload,
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 export default function DocumentManager({ role, companyId }) {
   const [documents, setDocuments] = useState([]);
@@ -42,39 +42,58 @@ export default function DocumentManager({ role, companyId }) {
   // Helper to get user email by ID
   const getUserEmail = (id) => {
     const user = users.find((u) => u.id === id);
-    return user ? user.email : `User ${id}`;
+    return user ? user.email : `${id}`;
+  };
+
+  // Helper to get file type
+  const getFileType = (filename = "") => {
+    const ext = filename.split(".").pop().toLowerCase();
+    return ext;
+  };
+
+  const isPreviewSupported = (filename) => {
+    const ext = getFileType(filename);
+    return ["pdf", "png", "jpg", "jpeg", "gif", "webp"].includes(ext);
   };
 
   // Fetch all users
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/api/users/companies");
+      const res = await api.get("/users/companies/list");
       setUsers(res.data); // ✅ FIX
     } catch (error) {
       console.error("Failed to fetch users", error);
     }
   };
 
-  // Fetch companies for non-user roles
+  // Fetch companies
 
   const fetchCompanies = async () => {
     try {
-      const { data } = await api.get("/api/users/companies");
+      const { data } = await api.get("/admin/companies/list");
 
       setCompanies(data);
     } catch (error) {
       console.error("Failed to fetch companies", error);
     }
   };
+
   // Fetch documents for selected company
   const fetchDocuments = async () => {
     setLoading(true);
     try {
       const { data } = await api.get(
-        `/api/companies/${selectedCompany}/documents`
+        `/admin/companies/${selectedCompany}/documents`
       );
 
-      setDocuments(data);
+      // No complex normalization needed anymore!
+      // Just ensure fallback if somehow missing (defensive)
+      const normalizedDocs = data.map((doc) => ({
+        ...doc,
+        status: doc.status || "ACTIVE", // safe fallback
+      }));
+
+      setDocuments(normalizedDocs);
     } catch (error) {
       console.error("Failed to fetch documents", error);
       setDocuments([]);
@@ -98,7 +117,7 @@ export default function DocumentManager({ role, companyId }) {
         const form = new FormData();
         form.append("file", file);
 
-        await api.post(`/api/companies/${selectedCompany}/documents`, form);
+        await api.post(`/admin/companies/${selectedCompany}/documents`, form);
       }
 
       fetchDocuments();
@@ -117,7 +136,9 @@ export default function DocumentManager({ role, companyId }) {
       return;
 
     try {
-      await api.delete(`/api/companies/${selectedCompany}/documents/${id}`);
+      await api.delete(
+        `/admin/companies/${selectedCompany}/documents/${id}/permanent`
+      );
 
       setDocuments((docs) => docs.filter((doc) => doc.id !== id));
       alert("Document deleted successfully!");
@@ -127,14 +148,51 @@ export default function DocumentManager({ role, companyId }) {
     }
   };
 
+  // Toggle document active / inactive
+  const toggleDocumentStatus = async (doc) => {
+    if (!doc.status) {
+      console.error("Document status unknown, cannot toggle:", doc);
+      return;
+    }
+
+    try {
+      let updatedDoc = { ...doc };
+
+      if (doc.status === "ACTIVE") {
+        // Soft delete → make INACTIVE
+        await api.delete(
+          `/admin/companies/${selectedCompany}/documents/${doc.id}`
+        );
+        updatedDoc.status = "INACTIVE";
+      } else {
+        // Reactivate → make ACTIVE
+        await api.put(
+          `/admin/companies/${selectedCompany}/documents/${doc.id}/reactivate`
+        );
+        updatedDoc.status = "ACTIVE";
+      }
+
+      // Update UI after successful backend response
+      setDocuments((prev) =>
+        prev.map((d) => (d.id === doc.id ? updatedDoc : d))
+      );
+    } catch (error) {
+      console.error("Failed to toggle document status", error);
+      alert("Failed to update document status");
+    }
+  };
+
   // Preview document
   const previewDoc = async (doc) => {
+    if (!isPreviewSupported(doc.filename)) {
+      alert("Preview is only available for PDF and image files.");
+      return;
+    }
+
     try {
       const res = await api.get(
-        `/api/companies/${selectedCompany}/documents/${doc.id}`,
-        {
-          responseType: "blob", // important for files
-        }
+        `/admin/companies/${selectedCompany}/documents/${doc.id}`,
+        { responseType: "blob" }
       );
 
       const url = URL.createObjectURL(res.data);
@@ -149,7 +207,7 @@ export default function DocumentManager({ role, companyId }) {
   const downloadDoc = async (doc) => {
     try {
       const res = await api.get(
-        `/api/companies/${selectedCompany}/documents/${doc.id}`,
+        `/admin/companies/${selectedCompany}/documents/${doc.id}`,
         {
           responseType: "blob", // Very important for file downloads
         }
@@ -393,14 +451,41 @@ export default function DocumentManager({ role, companyId }) {
                     </td>
 
                     <td className="px-4 sm:px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2 items-center">
+                        {/* Active / Inactive Toggle */}
+                        <button
+                          onClick={() => toggleDocumentStatus(doc)}
+                          className={`px-2 py-1 text-xs rounded-full font-medium transition-colors
+      ${
+        doc.status === "ACTIVE"
+          ? "bg-green-100 text-green-700 hover:bg-green-200"
+          : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+      }`}
+                          title={
+                            doc.status === "ACTIVE" ? "Deactivate" : "Activate"
+                          }
+                        >
+                          {doc.status === "ACTIVE" ? "Active" : "Inactive"}
+                        </button>
+
                         <button
                           onClick={() => previewDoc(doc)}
-                          className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors"
-                          title="Preview"
+                          disabled={!isPreviewSupported(doc.filename)}
+                          className={`p-1 rounded transition-colors
+    ${
+      isPreviewSupported(doc.filename)
+        ? "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+        : "text-gray-300 cursor-not-allowed"
+    }`}
+                          title={
+                            isPreviewSupported(doc.filename)
+                              ? "Preview"
+                              : "Preview not supported"
+                          }
                         >
                           <Eye size={16} />
                         </button>
+
                         <button
                           onClick={() => downloadDoc(doc)}
                           className="text-green-600 hover:text-green-800 p-1 hover:bg-green-50 rounded transition-colors"
@@ -444,11 +529,19 @@ export default function DocumentManager({ role, companyId }) {
               </button>
             </div>
             <div className="flex-1 overflow-hidden p-2 sm:p-4">
-              <iframe
-                src={preview.url}
-                className="w-full h-full border-0 rounded"
-                title="Document Preview"
-              />
+              {getFileType(preview.name) === "pdf" ? (
+                <iframe
+                  src={preview.url}
+                  className="w-full h-full border-0 rounded"
+                  title="PDF Preview"
+                />
+              ) : (
+                <img
+                  src={preview.url}
+                  alt={preview.name}
+                  className="max-w-full max-h-full mx-auto object-contain"
+                />
+              )}
             </div>
           </div>
         </div>

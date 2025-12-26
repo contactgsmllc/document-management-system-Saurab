@@ -10,13 +10,16 @@ function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     password: "",
     confirmPassword: "",
     companyId: "",
   });
+
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-
 
   // Fetch companies from API
   useEffect(() => {
@@ -24,26 +27,25 @@ function SignupPage() {
   }, []);
 
   const fetchCompanies = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { data } = await api.get("/api/users/companies");
+      const { data } = await api.get("/users/companies/list");
 
-    setCompanies(data);
-    setLoading(false);
+      setCompanies(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
 
-  } catch (error) {
-    console.error("Error fetching companies:", error);
+      setErrors({
+        general:
+          error.response?.data?.message ||
+          "Failed to load companies. Please refresh the page.",
+      });
 
-    setErrors({
-      general:
-        error.response?.data?.message ||
-        "Failed to load companies. Please refresh the page.",
-    });
-
-    setLoading(false);
-  }
-};
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +75,14 @@ function SignupPage() {
       newErrors.email = "Email is invalid";
     }
 
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
@@ -94,55 +104,61 @@ function SignupPage() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (validateForm()) {
-    setSubmitting(true);
+    if (validateForm()) {
+      setSubmitting(true);
 
-    // Prepare data for API
-    const userData = {
-      email: formData.email,
-      password: formData.password,
-      companyId: parseInt(formData.companyId),
-      roleId: 2, // USER role
-    };
+      // Prepare data for API
+      const userData = {
+        email: formData.email,
+        password: formData.password,
+        companyId: parseInt(formData.companyId),
+        firstName: formData.firstName,
+        middleName: formData.middleName || null, // optional
+        lastName: formData.lastName,
+        roleId: 2,
+      };
 
-    try {
-      const resp = await api.post("/api/users/register", userData);
+      try {
+        const resp = await api.post("/users/register", userData);
 
-      const data = resp.data;
+        const data = resp.data;
 
-      // Success
-      console.log("Registration successful:", data);
-      setSuccessMessage(
-        `Account created successfully! Welcome, ${data.email}. Redirecting to login...`
-      );
+        // Success
+        console.log("Registration successful:", data);
+        setSuccessMessage(
+          `Account created successfully! Welcome, ${data.email}. Redirecting to login...`
+        );
 
-      // Reset form
-      setFormData({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        companyId: "",
-      });
+        // Reset form
+        setFormData({
+          email: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          password: "",
+          confirmPassword: "",
+          companyId: "",
+        });
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-
-    } catch (error) {
-      console.error("Registration error:", error);
-      setErrors({
-        general: error.response?.data?.message || 
-                 error.message || 
-                 "Registration failed. Please try again.",
-      });
-    } finally {
-      setSubmitting(false);
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      } catch (error) {
+        console.error("Registration error:", error);
+        setErrors({
+          general:
+            error.response?.data?.message ||
+            error.message ||
+            "Registration failed. Please try again.",
+        });
+      } finally {
+        setSubmitting(false);
+      }
     }
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
@@ -205,6 +221,63 @@ function SignupPage() {
                 </div>
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
+              </div>
+
+              {/* First Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="Enter your first name"
+                  className={`w-full px-4 py-3 border ${
+                    errors.firstName ? "border-red-500" : "border-gray-300"
+                  } rounded-xl focus:ring-2 focus:ring-blue-500`}
+                />
+                {errors.firstName && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.firstName}
+                  </p>
+                )}
+              </div>
+
+              {/* Middle Name (Optional) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Middle Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleChange}
+                  placeholder="Enter your middle name (optional)"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Enter your last name"
+                  className={`w-full px-4 py-3 border ${
+                    errors.lastName ? "border-red-500" : "border-gray-300"
+                  } rounded-xl focus:ring-2 focus:ring-blue-500`}
+                />
+                {errors.lastName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
                 )}
               </div>
 

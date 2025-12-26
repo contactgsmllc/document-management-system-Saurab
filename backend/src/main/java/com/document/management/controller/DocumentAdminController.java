@@ -50,7 +50,8 @@ public class DocumentAdminController {
                         d.getContentType(),
                         d.getSize(),
                         d.getUploadedAt(),
-                        d.getUploadedByUserId()
+                        d.getUploadedByUserId(),
+                        d.getStatus()
                 ))
                 .collect(Collectors.toList());
     }
@@ -79,6 +80,11 @@ public class DocumentAdminController {
         docService.hardDelete(companyId, id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}/reactivate")
+    public ResponseEntity<Document> reactivateDocument(@PathVariable Long id) {
+        return ResponseEntity.ok(docService.reactivateDocument(id));
+    }
+
 
 
 }

@@ -36,7 +36,7 @@ public class JwtUtil {
                 .claim("companyName", companyName)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

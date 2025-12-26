@@ -27,6 +27,9 @@ public class CompanyAdminController {
         if (companyService.existsInactiveCompanyWithName(company.getName())) {
             throw new RuntimeException("Company is in Inactive status. Try reactivating it.");
         }
+        if (companyService.existsActiveCompanyWithName(company.getName())) {
+            throw new RuntimeException("Company with the same name already exists.");
+        }
         Company saved = companyRepo.save(company);
         return saved;
     }

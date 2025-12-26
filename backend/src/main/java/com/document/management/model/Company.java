@@ -14,7 +14,8 @@ public class Company {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String address; // US-based recommended fields private String city;
+    private String address;
+    private String city; // US-based recommended fields private String city;
     private String state; // e.g. CA, NY, TX
      private String contactPerson;
      private String zipCode;

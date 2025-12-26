@@ -18,7 +18,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../../api/axios.js";
 
 const AdminDashboard = () => {
@@ -43,6 +43,8 @@ const AdminDashboard = () => {
 
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const companiesFetchedRef = useRef(false);
+  const lastFetchedTabRef = useRef(null);
 
   // Get active tab from URL
   // =========================================================
@@ -96,36 +98,6 @@ const AdminDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCompanies();
-    fetchUsers();
-    fetchPendingUsers();
-  }, []);
-
-  // Adjust page when data or tab changes
-  useEffect(() => {
-    const items =
-      activeTab === "users"
-        ? users
-        : activeTab === "pending"
-        ? pendingUsers
-        : activeTab === "companies"
-        ? companies
-        : [];
-    const total = Math.ceil(items.length / itemsPerPage);
-    if (currentPage > total && total > 0) {
-      setCurrentPage(total);
-    }
-  }, [
-    users,
-    pendingUsers,
-    companies,
-    activeTab,
-    currentPage,
-    userFilter,
-    pendingFilter,
-  ]);
-
   const fetchCompanies = async () => {
     setLoading(true);
     try {
@@ -147,7 +119,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/users/list");
+      const { data } = await api.get("/admin/users/list");
       setUsers(data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -174,6 +146,59 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Fetch data based on active tab (only when tab changes)
+  useEffect(() => {
+    // Skip if we already fetched for this tab
+    if (lastFetchedTabRef.current === activeTab) {
+      return;
+    }
+
+    if (activeTab === "users") {
+      fetchUsers();
+      lastFetchedTabRef.current = activeTab;
+    } else if (activeTab === "pending") {
+      fetchPendingUsers();
+      lastFetchedTabRef.current = activeTab;
+    } else if (activeTab === "companies") {
+      if (!companiesFetchedRef.current) {
+        fetchCompanies();
+        companiesFetchedRef.current = true;
+      }
+      lastFetchedTabRef.current = activeTab;
+    } else if (activeTab === "documents") {
+      // Fetch companies for documents tab (needed for dropdown)
+      if (!companiesFetchedRef.current) {
+        fetchCompanies();
+        companiesFetchedRef.current = true;
+      }
+      lastFetchedTabRef.current = activeTab;
+    }
+  }, [activeTab]);
+
+  // Adjust page when data or tab changes
+  useEffect(() => {
+    const items =
+      activeTab === "users"
+        ? users
+        : activeTab === "pending"
+        ? pendingUsers
+        : activeTab === "companies"
+        ? companies
+        : [];
+    const total = Math.ceil(items.length / itemsPerPage);
+    if (currentPage > total && total > 0) {
+      setCurrentPage(total);
+    }
+  }, [
+    users,
+    pendingUsers,
+    companies,
+    activeTab,
+    currentPage,
+    userFilter,
+    pendingFilter,
+  ]);
 
   const isUserPending = (userId) => pendingUsers.some((u) => u.id === userId);
 
@@ -837,7 +862,7 @@ const AdminDashboard = () => {
                 )}
                 {activeTab === "documents" && (
                   <div>
-                    <DocumentManager role={userRole} companyId={companyId} />
+                    <DocumentManager role={userRole} companyId={companyId} companies={companies} />
                   </div>
                 )}
 

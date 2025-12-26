@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import api from "../../api/axios.js";
 import {
   Upload,
@@ -55,8 +55,8 @@ export default function UserDashboard() {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("documents");
-  const [userEmailMap, setUserEmailMap] = useState({});
-  const [userMapLoaded, setUserMapLoaded] = useState(false);
+  const lastFetchedTabRef = useRef(null);
+  const isFetchingRef = useRef(false);
 
 
 
@@ -65,29 +65,14 @@ export default function UserDashboard() {
   const companyId = userData.companyId;
   const userId = userData.userId;
 
-  // Fetch user map
-  const fetchUserMap = useCallback(async () => {
-    try {
-      const response = await api.get(`/user/list`);
-
-      if (response.data && Array.isArray(response.data)) {
-        const userMap = response.data.reduce((map, user) => {
-          map[user.id] = user.email || user.username || `User ID ${user.id}`;
-          return map;
-        }, {});
-        setUserEmailMap(userMap);
-      }
-      setUserMapLoaded(true);
-    } catch (err) {
-      console.error("Failed to load user map:", err);
-      setUserMapLoaded(true);
-    }
-  }, []);
-
   // Fetch documents
-  
   const fetchDocuments = useCallback(async () => {
-    if (!companyId) return; 
+    if (!companyId) return;
+    
+    // Prevent concurrent/duplicate calls
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    
     if (!uploading) {
       setLoading(true);
     }
@@ -100,15 +85,12 @@ export default function UserDashboard() {
 
       if (response.data && Array.isArray(response.data)) {
         let mappedData = response.data.map((doc) => {
-          const uploadedById = doc.uploadedBy || doc.user || 0;
-
           return {
             id: doc.id,
             filename: doc.filename || doc.name,
             size: doc.size,
             contentType: doc.contentType,
-            uploadedBy:
-              userEmailMap[uploadedById] || uploadedById || "Unknown User",
+            uploadedBy: doc.uploadedBy || doc.user || "Unknown User",
             uploadedAt: doc.uploadedAt || doc.createdAt,
           };
         });
@@ -136,18 +118,21 @@ export default function UserDashboard() {
       }
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [companyId, userEmailMap, uploading]);
+  }, [companyId, uploading]);
 
   useEffect(() => {
-    fetchUserMap();
-  }, [fetchUserMap]);
-
-  useEffect(() => {
-    if (activeTab === "documents" && userMapLoaded && companyId) {
-      fetchDocuments();
+    // Only fetch if we haven't already fetched for this tab/company combination
+    if (activeTab === "documents" && companyId) {
+      const fetchKey = `${activeTab}-${companyId}`;
+      if (lastFetchedTabRef.current !== fetchKey) {
+        lastFetchedTabRef.current = fetchKey;
+        fetchDocuments();
+      }
     }
-  }, [activeTab, userMapLoaded, fetchDocuments]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, companyId]);
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0 || !companyId) return;
@@ -343,14 +328,10 @@ export default function UserDashboard() {
           {/* Documents Tab */}
           {activeTab === "documents" && (
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-              {loading || !userMapLoaded ? (
+              {loading ? (
                 <div className="p-12 text-center text-gray-500">
                   <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                  <p>
-                    {!userMapLoaded
-                      ? "Initializing..."
-                      : "Loading documents..."}
-                  </p>
+                  <p>Loading documents...</p>
                 </div>
               ) : documents.length === 0 ? (
                 <div className="p-12 text-center text-gray-500">

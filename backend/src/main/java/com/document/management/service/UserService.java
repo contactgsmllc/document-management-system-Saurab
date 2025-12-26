@@ -5,6 +5,7 @@ import com.document.management.dto.LoginRequest;
 import com.document.management.dto.LoginResponse;
 import com.document.management.dto.RegisterRequest;
 import com.document.management.dto.UserResponse;
+import com.document.management.exception.ForbiddenException;
 import com.document.management.model.Role;
 import com.document.management.model.RoleType;
 import com.document.management.model.Status;
@@ -15,6 +16,7 @@ import com.document.management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +35,8 @@ public class UserService {
     private CompanyRepository companyRepo;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserResponse register(RegisterRequest req) {
 
@@ -82,34 +86,41 @@ public class UserService {
 
 
     public LoginResponse login(LoginRequest req) {
-        User user = userRepo.findByEmail(req.email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // MUST check approval
-        if (!user.isApproved()) {
-            throw new RuntimeException("User is not approved by admin yet");
-        }
-        if (!new BCryptPasswordEncoder().matches(req.password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        if (user.getRole().getName() == RoleType.USER && user.getCompany() == null) {
-            throw new RuntimeException("USER must be associated with a company");
-        }
-        String roleName = user.getRole().getName().name();
-        Long userId = user.getId();
-        Long companyId = null;
-        if (user.getCompany() != null) {
-            companyId = user.getCompany().getId();
-        }
-        return new LoginResponse(
-                jwtUtil.generateToken(user),
-                roleName,
-                userId,
-                companyId
+            User user = userRepo.findByEmailAndCompanyName(req.getEmail(), req.getCompanyName())
+                    .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
+            validateUser(user, req.getPassword());
 
-        );
+            return buildLoginResponse(user);
     }
+
+        /* ---------------- PRIVATE HELPERS ---------------- */
+
+        private void validateUser(User user, String rawPassword) {
+
+            if (!user.isApproved()) {
+                throw new ForbiddenException("User is not approved by admin yet");
+            }
+
+            if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+                throw new RuntimeException("Invalid credentials");
+            }
+
+            if (user.getRole().getName() == RoleType.USER && user.getCompany() == null) {
+                throw new IllegalStateException("USER must be associated with a company");
+            }
+        }
+
+        private LoginResponse buildLoginResponse(User user) {
+
+            return new LoginResponse(
+                    jwtUtil.generateToken(user),
+                    user.getRole().getName().name(),
+                    user.getId(),
+                    user.getCompany() != null ? user.getCompany().getId() : null
+            );
+        }
 
     public List<UserResponse> listAllUsers() {
         return userRepo.findAllUsersOrderByCreatedAtDesc().stream()

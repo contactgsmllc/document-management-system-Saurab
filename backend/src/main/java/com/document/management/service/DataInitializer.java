@@ -1,9 +1,7 @@
 package com.document.management.service;
 
-import com.document.management.model.Role;
-import com.document.management.model.RoleType;
-import com.document.management.model.Status;
-import com.document.management.model.User;
+import com.document.management.model.*;
+import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.RoleRepository;
 import com.document.management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +22,16 @@ public class DataInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(RoleRepository roleRepository,
-                           UserRepository userRepository,
+                           UserRepository userRepository, CompanyRepository companyRepository,
                            PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -58,12 +59,17 @@ public class DataInitializer implements CommandLineRunner {
             Role superAdminRole = roleRepository.findByName(RoleType.SUPER_ADMIN)
                     .orElseThrow(() -> new RuntimeException("SUPER_ADMIN role not found"));
 
+            Company company = new Company();
+            company.setName("GlobalSolutions");
+            companyRepository.save(company);
+
             User user = new User();
             user.setEmail(adminEmail);
             user.setPassword(passwordEncoder.encode(adminPassword));
             user.setRole(superAdminRole);
             user.setApproved(true);
             user.setStatus(Status.ACTIVE);
+            user.setCompany(company);
             userRepository.save(user);
         }
     }

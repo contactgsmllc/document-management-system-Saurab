@@ -33,7 +33,7 @@ public class UserAdminController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping
+    @GetMapping("/list")
     public List<UserResponse> listUsers() {
         return userService.listAllUsers();
     }

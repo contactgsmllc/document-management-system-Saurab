@@ -6,6 +6,7 @@ const AdminSidebar = ({
   pendingCount,
   isOpen,
   toggleSidebar,
+  currentUser
 }) => {
   const menuItems = [
     {
@@ -61,8 +62,12 @@ const AdminSidebar = ({
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-blue-900">Admin Panel</h2>
-            <p className="text-sm text-gray-500 mt-1">Manage your system</p>
+            <h2 className="text-xl font-bold text-blue-900">
+            {currentUser?.firstName ? `Hi ${currentUser.firstName}` : "Admin Panel"}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+            {currentUser?.email || "Manage your files"}
+            </p>
           </div>
 
           {/* Navigation */}

@@ -47,4 +47,10 @@ public class UserController {
     public List<Company> listCompanies() {
         return companyRepo.findByStatusOrderByCreatedAtDesc(Status.ACTIVE);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponse res = service.getUserById(id);
+        return ResponseEntity.ok(res);
+    }
 }

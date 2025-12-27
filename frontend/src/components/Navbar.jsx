@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
+import logo from '../assets/logo.png'; 
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -136,14 +137,30 @@ const Navbar = () => {
       aria-label="Main navigation"
     >
       <div className="max-w-8xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
-        {/* Logo */}
+        {/* Logo *
         <Link 
           to="/" 
           className="text-xl sm:text-2xl font-bold z-50 font-sans hover:opacity-80 transition-opacity duration-200"
           onClick={closeAllMenus}
         >
           Global Solutions Tech
-        </Link>
+        </Link>*/}
+        {/*logo*/}
+ 
+
+<Link 
+  to="/" 
+  className="flex items-center z-50 hover:opacity-80 transition-opacity duration-200"
+  onClick={closeAllMenus}
+>
+  <img 
+    src={logo} 
+    alt="Global Solutions Tech Logo" 
+    /*className="h-28 w-auto sm:h-12" */
+    className="h-20 sm:h-[100px] w-auto brightness-0 invert object-contain" 
+/>
+  
+</Link>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex flex-wrap gap-8 lg:gap-14 items-center font-sans">

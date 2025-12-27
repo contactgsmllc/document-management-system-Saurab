@@ -101,14 +101,15 @@ export default function UserDashboard() {
 
       if (response.data && Array.isArray(response.data)) {
        let mappedData = response.data.map((doc) => ({
-  id: doc.id,
-  filename: doc.filename,
-  size: doc.size,
-  contentType: doc.contentType,
-  uploadedBy: doc.uploadedByUserId || "Unknown",
-  uploadedAt: doc.uploadedAt,
-  status: doc.status, 
-}));
+        id: doc.id,
+        filename: doc.filename,
+         size: doc.size,
+         contentType: doc.contentType,
+        uploadedBy: doc.uploadedByUserId || doc.user || "Unknown",
+          uploadedAt: doc.uploadedAt,
+           status: doc.status, 
+             }));
+               
 
 
 
@@ -138,6 +139,7 @@ export default function UserDashboard() {
       isFetchingRef.current = false;
     }
   }, [companyId, uploading]);
+
 
   useEffect(() => {
     // Only fetch if we haven't already fetched for this tab/company combination

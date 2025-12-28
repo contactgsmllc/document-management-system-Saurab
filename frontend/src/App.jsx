@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 
+
+
 // Pages
 import LandingPage from "./pages/LandingPage";
 import ContactPage from "./pages/ContactPage";
@@ -164,6 +166,7 @@ function App() {
           }
         />
       </Routes>
+
       <ToastContainer position="bottom-right" autoClose={2000} />
     </>
   );

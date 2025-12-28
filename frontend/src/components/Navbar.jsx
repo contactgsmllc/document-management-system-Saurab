@@ -148,22 +148,39 @@ const Navbar = () => {
         {/*logo*/}
  
 
-<Link 
-  to="/" 
-  className="flex items-center z-50 hover:opacity-80 transition-opacity duration-200"
+
+   
+<Link
+  to="/"
+  className="flex items-center leading-none z-50 hover:opacity-80 transition"
   onClick={closeAllMenus}
 >
-  <img 
-    src={logo} 
-    alt="Global Solutions Tech Logo" 
-    /*className="h-28 w-auto sm:h-12" */
-    className="h-20 sm:h-[100px] w-auto brightness-0 invert object-contain" 
-/>
-  
+  <img
+    src={logo}
+    alt="Global Solutions Logo"
+    className="h-18 w-auto -mr-1"
+  />
+
+  <h1 className="-m-6 p-0 text-white text-xl sm:text-2xl font-semibold font-serif">
+    Global Solutions
+  </h1>
 </Link>
+
+
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex flex-wrap gap-8 lg:gap-14 items-center font-sans">
+            <li>
+    <Link
+      to="/"
+      className={`px-3 py-2 transition-colors duration-200 font-medium rounded ${
+        scrolled ? "hover:text-gray-300" : "hover:text-blue-200"
+      }`}
+      onClick={closeAllMenus}
+    >
+      Home
+    </Link>
+  </li>
           {Object.entries(navItems).map(([key, { title, items }]) => (
             <li key={key} className="relative">
               <div
@@ -268,6 +285,16 @@ const Navbar = () => {
           className="md:hidden fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-blue-900 overflow-y-auto z-40 font-sans"
         >
           <div className="px-4 py-4 space-y-2">
+              <div className="border-b border-blue-700">
+    <Link
+      to="/"
+      className="block py-3 text-lg font-semibold text-white hover:bg-blue-800 rounded-lg px-2 transition-colors duration-200"
+      onClick={closeAllMenus}
+    >
+      Home
+    </Link>
+  </div>
+
             {Object.entries(navItems).map(([key, { title, items }]) => (
               <div key={key} className="border-b border-blue-700">
                 <button
@@ -308,6 +335,7 @@ const Navbar = () => {
                 )}
               </div>
             ))}
+
 
             <div className="border-b border-blue-700">
               <Link

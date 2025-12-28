@@ -40,8 +40,9 @@ const AdminSidebar = ({
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg"
-      >
+        /*className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg"
+      >*/
+       className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg">
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
@@ -49,13 +50,16 @@ const AdminSidebar = ({
       {isOpen && (
         <div
           onClick={toggleSidebar}
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          /*className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"*/
+          className="lg:hidden fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-black bg-opacity-50 z-30"
+
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
+        /*className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${*/
+        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 w-64`}
       >

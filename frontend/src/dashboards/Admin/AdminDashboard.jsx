@@ -3,6 +3,8 @@ import DocumentManager from "../../components/DocumentManager.jsx";
 import CompanyModal from "../../components/modals/CompanyModal.jsx";
 import UserModal from "../../components/modals/UserModal.jsx";
 import { useParams, useNavigate } from "react-router-dom";
+import DashboardNavbar from "../../components/DashboardNavbar.jsx";
+
 
 import {
   Building2,
@@ -385,6 +387,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+   
+      <DashboardNavbar />
+
+ 
+
+       
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidebar}
@@ -400,10 +408,14 @@ const AdminDashboard = () => {
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
         />
       )}
+      
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
+        /*className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out */
+          className={`fixed top-16 left-0 h-[calc(100vh-4rem)]
+  bg-white border-r border-gray-200 shadow-lg z-40
+  transition-transform duration-300 ease-in-out${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 w-64`}
       >
@@ -475,9 +487,13 @@ const AdminDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 transition-all duration-300">
+     {/* <main className="flex-1 lg:ml-64 transition-all duration-300">*/}
+     <main className="flex-1 lg:ml-64 pt-16 transition-all duration-300">
+
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+        {/*<header className="bg-white border-b border-gray-200 sticky top-0 z-20">*/}
+        <header className="bg-white border-b border-gray-200">
+
           <div className="px-4 sm:px-6 lg:px-8 py-4 ml-16 lg:ml-0">
             <h1 className="text-xl sm:text-2xl font-bold text-blue-900">
               {activeTab === "users" && "All Users"}
@@ -924,6 +940,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       </main>
+      
 
       {/* Modal */}
       <CompanyModal

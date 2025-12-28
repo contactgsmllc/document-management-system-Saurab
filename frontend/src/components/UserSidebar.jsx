@@ -7,7 +7,8 @@ export default function Sidebar({
   activeTab, 
   setActiveTab, 
   handleLogout,
-  currentUser
+  currentUser,
+  
 }) {
   const menuItems = [
     { id: "documents", label: "My Documents", icon: Folder },
@@ -19,25 +20,39 @@ export default function Sidebar({
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg"
-      >
+        /*className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg"
+      >*/
+      className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-lg">
+
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
+
+
+
+
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           onClick={toggleSidebar}
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+         /* className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"*/
+         className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-black bg-opacity-50 z-30"
+
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
+        /*className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 w-64`}
-      >
+      >*/
+      
+  className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 shadow-lg z-40 transition-transform duration-300 ease-in-out ${
+    sidebarOpen ? "translate-x-0" : "-translate-x-full"
+  } lg:translate-x-0 w-64`}
+     >
+
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">

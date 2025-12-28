@@ -16,14 +16,10 @@ export default function Consulting() {
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-8 sm:pt-28">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900 text-center mb-4">
-          Software Engineering
+          Software Design and Development
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-4xl text-center mx-auto">
-          Welcome to Global Solutions, where innovation meets precision in
-          software engineering. We are dedicated to delivering high-quality,
-          scalable, and robust software solutions that drive your business
-          forward. With a team of seasoned engineers and cutting-edge
-          technologies, we turn your vision into reality.
+         At Global Solutions Tech, innovation and precision come together in every software solution we deliver. Our team of expert engineers uses cutting-edge technology to create scalable, robust applications that bring your vision to life
         </p>
       </div>
 
@@ -52,26 +48,20 @@ export default function Consulting() {
               {/* Custom Software Development */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Custom Software Development
+                Custom Software Solutions
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Tailored to your unique business needs, our custom software
-                  development services span the entire development lifecycle. We
-                  build software solutions that are scalable, secure, and
-                  designed to give you a competitive edge.{" "}
+                Our custom software development services are designed to meet your unique business requirements, covering the full development lifecycle. We create scalable, secure solutions that enhance efficiency and provide a competitive advantage.{" "}
                 </p>
               </div>
 
               {/* Enterprise Application Development */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Enterprise Application Development
+                  Enterprise Application Solutions
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Streamline your operations and boost productivity with our
-                  enterprise application development services. We create
-                  powerful, user-friendly applications that integrate seamlessly
-                  with your existing systems and processes.
+                Optimize your operations and maximize productivity through our enterprise application development. Our solutions are powerful, user-friendly, and seamlessly integrate with your current systems.
                 </p>
               </div>
 
@@ -81,10 +71,7 @@ export default function Consulting() {
                   Web and Mobile App Development
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Reach your audience wherever they are with our web and mobile
-                  app development services. From responsive web applications to
-                  native and cross-platform mobile apps, we deliver solutions
-                  that offer a seamless user experience.
+                Connect with your audience anytime, anywhere through our web and mobile application development services. From responsive websites to native and cross-platform mobile apps, we deliver seamless and engaging user experiences.
                 </p>
               </div>
 
@@ -94,11 +81,7 @@ export default function Consulting() {
                   Cloud Solutions
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Embrace the power of the cloud with our comprehensive cloud
-                  solutions. We help you leverage cloud technologies to improve
-                  scalability, enhance security, and reduce costs, whether
-                  you're looking to migrate existing applications or develop new
-                  cloud-native solutions
+                Unlock the full potential of cloud computing with our end-to-end cloud solutions. We help you harness cloud technologies to boost scalability, strengthen security, and optimize costs, whether migrating existing applications or building new cloud-native systems.
                 </p>
               </div>
             </div>
@@ -112,20 +95,20 @@ export default function Consulting() {
               <div className="space-y-6">
                 {[
                   {
-                    title: "Technical Expertise",
-                    desc: "Our team of skilled software engineers brings extensive experience and technical know-how to every project, ensuring the highest standards of quality and performance.",
+                    title: "Technical Competence",
+                    desc: "With extensive experience and advanced technical skills, our software engineers ensure every project is executed with excellence and optimized performance.",
                   },
                   {
-                    title: "Innovation",
-                    desc: "We stay at the forefront of technology trends and innovations, continuously exploring new tools and methodologies to deliver cutting-edge solutions.",
+                    title: "Progressive Solutions",
+                    desc: "At the cutting edge of technology, we continuously explore emerging tools and techniques to deliver innovative solutions.",
                   },
                   {
                     title: "Collaboration",
-                    desc: "We believe in a collaborative approach, working closely with you to understand your business challenges and objectives, and delivering solutions that are perfectly aligned with your goals.",
+                    desc: "By working hand-in-hand with you, we gain a deep understanding of your business needs and craft solutions that are fully aligned with your objectives.",
                   },
                   {
-                    title: "Reliability",
-                    desc: "Our commitment to excellence means you can trust us to deliver reliable, scalable, and secure software solutions that drive your business success.",
+                    title: "Reliability and Dependability",
+                    desc: "With a dedication to excellence, we deliver dependable, scalable, and secure software solutions that empower your business to succeed.",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">
@@ -195,7 +178,7 @@ export default function Consulting() {
                     href="tel:+15617642272"
                     className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition"
                   >
-                    +1 (561) 764-2272
+                    +1 (860)-337-2116
                   </a>
                 </div>
                 <div>
@@ -204,7 +187,7 @@ export default function Consulting() {
                     href="mailto:info@ gstechsystems.com"
                     className="text-sm sm:text-base hover:underline break-all"
                   >
-                    info@ gstechsystems.com
+                    info@gstechsystems.com
                   </a>
                 </div>
               </div>

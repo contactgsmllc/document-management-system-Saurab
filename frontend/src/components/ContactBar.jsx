@@ -29,11 +29,17 @@ export default function ContactBar() {
             <div className="flex items-center gap-2.5">
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
               <a
-                href="mailto:info@ gstechsystems.com"
+                href="mailto:info@gstechsystems.com"
                 className="text-base sm:text-lg font-medium hover:text-blue-200 transition break-all sm:break-normal"
               >
-                info@ gstechsystems.com
+                info@gstechsystems.com
               </a>
+              <a
+                    href="mailto:support@gstechsystems.com"
+                    className="text-sm sm:text-base hover:underline break-all"
+                  >
+                    support@gstechsystems.com
+                  </a>
             </div>
           </div>
         </div>

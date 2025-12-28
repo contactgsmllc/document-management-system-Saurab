@@ -37,12 +37,10 @@ function About() {
 <section className="bg-white text-blue-900 py-0 px-0 ">
   <div className="text-center">
 <h1 className="text-4xl font-bold mb-8">
-      Experts are behind everything we do
+   Behind every success is our team of experts.
     </h1>
     <p className="text-lg text-gray-800 leading-relaxed mb-8 m-4 max-w-5xl mx-auto ">
-      We deliver what we promise, as this has been our guiding principle. 
-      Our vision is to improve the quality of human life 
-      through relentless innovation in business and technological processes and practices.
+    Delivering on our promises is at the heart of everything we do. Our vision is to advance human quality of life through relentless innovation in business and technology practices.
     </p>
   </div>
 
@@ -56,15 +54,13 @@ function About() {
     <div className="p-6">
       <h2 className="text-3xl font-bold mb-4 text-blue-900">Our Commitment</h2>
       <p className="text-gray-700 leading-relaxed">
-        To develop Outsource and Co-source Turnkey Projects for Government and Industries 
-        around the globe and yield higher productivity, higher profitability 
-        and higher satisfaction for our clients.
+      Our mission is to help organizations achieve their goals by providing customized IT solutions, exceptional service, and continuous support that ensures success in a rapidly evolving digital world.
       </p>
 
       <ul className="list-disc list-inside text-gray-700 py-5 px-6">
-        <li className="text-gray-700 m-1">Help clients to achieve critical business objectives.</li>
-        <li className="text-gray-700 m-1">Setting new standard in IT Project Delivery & Service</li>
-        <li className="text-gray-700 m-1">Transforming lives by collaborating with clients</li>
+        <li className="text-gray-700 m-1">Drive clients toward their strategic objectives.</li>
+        <li className="text-gray-700 m-1">Leading the Way in IT Solutions and Service Excellence</li>
+        <li className="text-gray-700 m-1">Enabling growth and transformation through collaboration</li>
       </ul>
     </div>
 
@@ -90,15 +86,9 @@ function About() {
     />
 
     <div className="p-6">
-      <h2 className="text-3xl font-bold mb-4 text-blue-900">Our Vision</h2>
+      <h2 className="text-3xl font-bold mb-4 text-blue-900">Our Aspiration</h2>
       <p className="text-gray-700 leading-relaxed">
-        Our vision is to accelerate execution of our growth strategy while continuing to build our brand with clients, 
-        community and our employees. In every business engagement, 
-        we seek the opportunity to build long-lasting, strategic relationships
-         with our client-centric focus that forms the basis for how we, as a company, 
-         operate and serve our clients. To be the best global IT delivery company,
-          delivering solution by combining our unparalleled experience and capabilities across all industries, 
-          and collaborating with clients.
+      Our vision is to drive the rapid execution of our growth strategy while strengthening our brand with clients, communities, and employees. In every engagement, we aim to build lasting, strategic relationships, guided by a client-centric approach that shapes how we operate and deliver value. We aspire to be the world’s leading IT delivery company, combining unmatched expertise and industry-wide capabilities to provide innovative solutions in close collaboration with our clients.
       </p>
     </div>
 

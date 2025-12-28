@@ -201,10 +201,9 @@ const ContactPage = () => {
                     <h4 className="font-semibold text-gray-800">Our Headquarters</h4>
                     <p className="text-gray-600 mt-1">
                       
-                    Flat 301, Suncity Apartments<br />
-                      Sector 22, Gurgaon<br />
-                       Haryana 122001<br />
-                         India
+                    PO Box 902,<br />
+                    South Windsor<br />
+                    CT 06074<br />
                     </p>
                   </div>
                 </div>
@@ -216,8 +215,7 @@ const ContactPage = () => {
                   <div>
                     <h4 className="font-semibold text-gray-800">Phone</h4>
                     <p className="text-gray-600 mt-1">
-                      +91 11 2345 6789<br />
-                        +91 22 2555 1234
+                    +1 (860)-337-2116
                     </p>
                   </div>
                 </div>
@@ -229,8 +227,7 @@ const ContactPage = () => {
                   <div>
                     <h4 className="font-semibold text-gray-800">Email</h4>
                     <p className="text-gray-600 mt-1">
-                      info@ gstechsystems.com<br />
-                      support@globalsolutions.com
+                      info@gstechsystems.com
                     </p>
                   </div>
                 </div>

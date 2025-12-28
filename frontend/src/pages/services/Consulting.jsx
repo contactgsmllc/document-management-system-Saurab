@@ -16,13 +16,10 @@ export default function Consulting() {
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-8 sm:pt-28">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900 text-center mb-4">
-          Consulting
+          Consulting Services
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-4xl text-center mx-auto">
-          As a service provider, Global Solutions offers a wide array of
-          consulting services tailored to meet the needs of their clients.
-          Here's an overview of the content that might be associated with
-          Global Solutions as a consulting service provider.
+        As a trusted service provider, Global Solutions Tech delivers a comprehensive range of consulting services designed to address the requirements of its clients. Below is an overview of the offerings associated with Global Solutions as a consulting partner.
         </p>
       </div>
 
@@ -54,53 +51,37 @@ export default function Consulting() {
                   IT Consulting Services
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Global Solutions provides comprehensive IT consulting services
-                  to help businesses align their technology strategies with
-                  their overall objectives. This may include IT infrastructure
-                  assessment, digital transformation strategies, cloud computing
-                  solutions, cybersecurity consulting, and more.
+                Global Solutions Tech helps businesses bridge the gap between technology and strategy through comprehensive IT consulting services, including digital transformation, cloud computing, and  infrastructure evaluation.
                 </p>
               </div>
 
               {/* Staff Augmentation */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Staff Augmentation
+                IT Resource Augmentation
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Global Solutions may offer staff augmentation services to help
-                  businesses scale their teams quickly and efficiently. This
-                  could involve providing skilled IT professionals on a contract
-                  basis to supplement existing teams or fill skill gaps for
-                  specific projects.
+                Global Solutions Tech offers workforce augmentation services that enable businesses to scale their teams rapidly and efficiently by providing skilled IT professionals on a flexible, contract basis to support existing teams or address specific project requirements.
                 </p>
               </div>
 
               {/* Custom Software Development */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Custom Software Development
+                Custom Software Solutions
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Global Solutions may specialize in custom software development,
-                  creating tailored solutions to address specific business
-                  challenges. This could include developing enterprise
-                  applications, mobile apps, web portals, and more, designed to
-                  enhance efficiency, productivity, and competitiveness.
+                Global Solutions Tech creates software solutions that address specific business needs, including enterprise systems, mobile apps, and web platforms that drive efficiency, productivity, and growth.
                 </p>
               </div>
 
               {/* Quality Assurance and Testing */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Quality Assurance and Testing
+                  Software Quality Management
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Ensuring the reliability and performance of software
-                  applications is crucial for businesses. Global Solutions may
-                  offer quality assurance and testing services to help clients
-                  identify and resolve issues before deployment, ensuring a
-                  seamless user experience.
+                Maintaining application reliability and performance is essential for business success. Global Solutions Tech provides comprehensive quality assurance and testing services to identify and address issues early, ensuring smooth deployments and an optimal user experience. 
                 </p>
               </div>
 
@@ -110,12 +91,7 @@ export default function Consulting() {
                   Data Analytics and Business Intelligence
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Data Analytics and Business Intelligence Global Solutions may
-                  assist businesses in harnessing the power of data through
-                  advanced analytics and business intelligence solutions. This
-                  could involve data visualization, predictive analytics, data
-                  mining, and other techniques to uncover valuable insights and
-                  drive informed decision-making.
+                Global Solutions may help to empower businesses to transform data into insights using cutting-edge analytics and business intelligence tools, including visualization, predictive modeling, and data mining to support smarter, faster decisions.
                 </p>
               </div>
 
@@ -125,11 +101,7 @@ export default function Consulting() {
                   Project Management
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Effective project management is essential for the successful
-                  execution of IT initiatives. Global Solutions may provide
-                  project management services to help clients plan, execute, and
-                  monitor projects, ensuring they are delivered on time, within
-                  budget, and according to specifications.
+                Successful IT initiatives depend on effective project management. Global Solutions Tech supports clients with end-to-end project management services that ensure projects are executed efficiently, on schedule, and within budget.
                 </p>
               </div>
             </div>
@@ -144,15 +116,15 @@ export default function Consulting() {
                 {[
                   {
                     title: "Experienced Team",
-                    desc: "Our consultants bring years of experience and industry expertise to every project, ensuring you receive the highest level of service and support.",
+                    desc: "With years of hands-on experience and industry knowledge, our consultants provide trusted guidance and high-quality support for every project.",
                   },
                   {
                     title: "Customized Solutions",
-                    desc: "We understand that every business is unique, which is why we take a personalized approach to consulting. Our solutions are tailored to meet your specific needs and objectives.",
+                    desc: "Every business is different, so we craft customized consulting strategies that address your unique needs and objectives.",
                   },
                   {
-                    title: "Proven Results",
-                    desc: "We have a track record of delivering tangible results for our clients, from cost savings to revenue growth. When you partner with Global Solutions, you can trust that you're in good hands.",
+                    title: "Demonstrated Success",
+                    desc: "We help clients achieve real, measurable results, whether it’s cutting costs or boosting revenue. Partnering with Global Solutions ensures expert guidance and reliable outcomes.",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">

@@ -16,11 +16,10 @@ export default function Consulting() {
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-8 sm:pt-28">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900 text-center mb-4">
-          Cloud Solution
+          Cloud Solutions
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-4xl text-center mx-auto">
-          Welcome to Global Solutions: Empowering Your Business with Innovative
-          Cloud Solutions.
+        Driving Business Growth Through Advanced Cloud Solutions
         </p>
       </div>
 
@@ -49,40 +48,40 @@ export default function Consulting() {
               {/* Cloud Migration Services */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Cloud Migration Services
+                Cloud Transition Services
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Seamlessly transition your applications, data, and infrastructure to the cloud with our expert migration services. Our proven methodologies ensure a smooth and efficient migration process, minimizing risks and disruptions.
+                Effortlessly move your applications, data, and infrastructure to the cloud with our expert migration services. Our tested methodologies ensure a smooth, secure, and efficient transition with minimal disruption.
                 </p>
               </div>
 
               {/* Cloud Infrastructure Management */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Cloud Infrastructure Management
+                Cloud Platform Management
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Maximize the performance, availability, and security of your cloud infrastructure with our comprehensive management solutions. From provisioning and optimization to monitoring and security enhancements, we've got you covered.
+                Ensure your cloud infrastructure is secure, efficient, and always available with our complete management solutions—from provisioning to monitoring and optimization.
                 </p>
               </div>
 
               {/* Cloud Application Development */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Cloud Application Development
+                Cloud-Based Application Development
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Leverage the power of cloud-native architectures and modern development frameworks with our end-to-end application development services. Whether you need scalable web applications, microservices-based architectures, or containerized solutions, our experienced team delivers innovative and high-performing applications to drive your business forward.
+                Harness the potential of cloud-native architectures and modern development frameworks with our comprehensive application development services. From scalable web applications to microservices and containerized solutions, our expert team delivers high-performance, innovative applications that drive business growth.
                 </p>
               </div>
 
               {/* Cloud Security Solutions */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Cloud Security Solutions
+                Secure Cloud Solutions
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Protect your data, applications, and infrastructure from evolving threats with our robust security solutions. From identity and access management to encryption and threat detection, we implement multi-layered security controls to safeguard your assets and ensure regulatory compliance.
+                Safeguard your data, applications, and infrastructure from emerging threats with our comprehensive security solutions. From identity and access management to encryption and threat monitoring, we implement multi-layered controls to protect your assets and maintain regulatory compliance.
                 </p>
               </div>
             </div>
@@ -95,10 +94,10 @@ export default function Consulting() {
 
               <div className="space-y-6">
                 {[
-                  { title: "Expertise", desc: "Our team of experienced professionals brings deep expertise in cloud technologies and best practices to every project." },
-                  { title: "Innovation", desc: "We stay ahead of the curve with the latest advancements in cloud computing, AI, and automation to deliver innovative solutions that drive business value." },
-                  { title: "Customer-Centric Approach", desc: "We prioritize customer satisfaction, collaborating closely with our clients to understand their unique challenges and deliver tailored solutions that meet their specific needs." },
-                  { title: "Reliability", desc: "With a track record of success and a commitment to excellence, you can trust Global Solutions to deliver reliable, high-quality cloud solutions that exceed your expectations." },
+                  { title: "Competence", desc: "Our team of experienced professionals brings deep expertise in cloud technologies and best practices to every project." },
+                  { title: "Innovation", desc: "We leverage the latest advancements in cloud computing, AI, and automation to deliver forward-thinking solutions that create measurable business value." },
+                  { title: "Client-Focused Approach", desc: "Our focus is on customer satisfaction. We partner with clients to understand their challenges and deliver solutions tailored to their business goals." },
+                  { title: "Reliability and Dependability", desc: "Trust Global Solutions to provide dependable, high-quality cloud solutions, built on a proven track record and a commitment to excellence." },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">
                     <div className="flex-shrink-0 mt-1">
@@ -152,13 +151,13 @@ export default function Consulting() {
                 <div>
                   <p className="text-blue-100 text-sm mb-2">Call Us</p>
                   <a href="tel:+15617642272" className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition">
-                    +1 (561) 764-2272
+                  +1 (860)-337-2116
                   </a>
                 </div>
                 <div>
                   <p className="text-blue-100 text-sm mb-2">Email Us</p>
-                  <a href="mailto:info@ gstechsystems.com" className="text-sm sm:text-base hover:underline break-all">
-                    info@ gstechsystems.com
+                  <a href="mailto:info@gstechsystems.com" className="text-sm sm:text-base hover:underline break-all">
+                    info@gstechsystems.com
                   </a>
                 </div>
               </div>

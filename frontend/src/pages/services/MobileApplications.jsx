@@ -19,10 +19,7 @@ export default function Consulting() {
           Mobile Applications
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-4xl text-center mx-auto">
-          At Global Solutions, we don't just build mobile applications; we craft
-          digital experiences that captivate, inspire, and transform. Step into
-          a world where creativity meets technology, and your mobile dreams
-          become reality.
+        At Global Solutions Tech, we create more than mobile apps—we deliver engaging digital experiences that inspire and transform. Combining creativity and technology, we turn your ideas into reality.
         </p>
       </div>
 
@@ -44,98 +41,71 @@ export default function Consulting() {
           <div className="order-2 lg:order-1">
             {/* Our Solutions */}
             <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-8">
-              Unleash Your Potential with Global Solutions
+              Elevate Your Potential with Global Solutions Tech
             </h2>
 
             <div className="space-y-8 mb-12">
               {/* Imagine */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Imagine
+                 Envision
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Close your eyes and envision the possibilities. What if your
-                  business had a mobile app that could seamlessly connect you
-                  with your customers, empower your employees, and propel your
-                  brand to new heights? At Global Solutions, we turn your wildest
-                  dreams into digital masterpieces.
+                 Picture the possibilities. Imagine a mobile app that seamlessly connects you with customers, empowers your team, and elevates your brand. At Global Solutions, we transform your vision into cutting-edge digital solutions.
                 </p>
               </div>
 
               {/*Innovate*/}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Innovate
+                Modernize
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  In a world where innovation is the currency of success, we are
-                  your trusted partner in mobile app development. Our team of
-                  visionary designers, developers, and strategists works
-                  tirelessly to push the boundaries of what's possible,
-                  exploring new technologies and techniques to bring your ideas
-                  to life.
+                In today’s fast-paced digital world, we are your trusted partner in mobile app development. Our team of experienced designers, developers, and strategists continuously explores new technologies and approaches to transform your ideas into reality.
                 </p>
               </div>
 
               {/* Inspire */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Inspire
+                Empower
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Your mobile app isn't just a piece of software; it's a
-                  reflection of your brand's personality and values. That's why
-                  we take a human-centered approach to design, crafting
-                  experiences that inspire and delight users at every
-                  touchpoint. From stunning visuals to intuitive interfaces, we
-                  ensure that your app stands out from the crowd and leaves a
-                  lasting impression.
+                Your mobile app is more than software—it embodies your brand’s identity and values. That’s why we adopt a human-centered design approach, creating experiences that engage and delight users at every interaction. From elegant visuals to intuitive interfaces, we ensure your app makes a lasting impact.
                 </p>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-8">
-                Elevate Your Business with Our Mobile Solutions
+              Take Your Business to the Next Level with Mobile Solutions
               </h2>
 
               {/* Immersive Experiences */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Immersive Experiences
+                Competitive Advantage
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Dive into the world of augmented reality, virtual reality, and
-                  mixed reality with our immersive mobile experiences. From
-                  interactive product demos to virtual tours, we create
-                  captivating experiences that engage and delight users like
-                  never before.
+                Having a mobile presence differentiates a business from competitors. Supports innovation and strengthens market positioning.
                 </p>
               </div>
 
-              {/* Gamification */}
+              {/* Increased Revenue Opportunities */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Gamification
+                Increased Revenue Opportunities
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Turn everyday tasks into exciting adventures with gamified
-                  mobile apps. Whether you're looking to boost employee
-                  productivity, incentivize customer loyalty, or educate and
-                  entertain your audience, our gamification experts have you
-                  covered.
+                Mobile commerce, in-app purchases, and subscription models open new revenue streams. Targeted marketing and promotions can boost sales.
                 </p>
               </div>
 
-              {/* Emerging Technologies */}
+              {/* Increased Customer Engagement */}
               <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg">
                 <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                  Emerging Technologies
+                Increased Customer Engagement
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                  Stay ahead of the curve with our cutting-edge mobile solutions
-                  powered by emerging technologies such as artificial
-                  intelligence, blockchain, and the Internet of Things. From
-                  smart assistants to predictive analytics, we harness the power
-                  of technology to drive innovation and transform industries.
+                Mobile apps allow businesses to connect with customers directly through push notifications, in-app messages, and personalized content. Enhances loyalty and brand awareness.
                 </p>
               </div>
             </div>
@@ -228,7 +198,7 @@ export default function Consulting() {
                     href="tel:+15617642272"
                     className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition"
                   >
-                    +1 (561) 764-2272
+                    +1 (860)-337-2116
                   </a>
                 </div>
                 <div>
@@ -237,7 +207,7 @@ export default function Consulting() {
                     href="mailto:info@ gstechsystems.com"
                     className="text-sm sm:text-base hover:underline break-all"
                   >
-                    info@ gstechsystems.com
+                    info@gstechsystems.com
                   </a>
                 </div>
               </div>

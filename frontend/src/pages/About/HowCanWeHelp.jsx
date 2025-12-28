@@ -39,10 +39,10 @@ function HowCanWeHelp() {
 <section className="bg-gray-200 text-blue-900 px-0">
   <div className="text-center pt-8"> 
     <h1 className="text-3xl font-bold mb-4">
-     Our specialization and offerings
+    Our Core Competencies and Solutions
     </h1>
     <p className="text-xl text-gray-800 leading-relaxed max-w-5xl mx-auto pb-8">
-Our Specialization And Offerings, Can Help You To Get IT Solutions To Market More Quickly.
+    With our specialized services, we help you bring IT solutions to market faster and more efficiently.
     </p>
   </div>
 </section>
@@ -59,12 +59,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Fixed Cost Business Solution</h2>
             <p className="text-gray-800 leading-relaxed ">
-              The Fixed Price- Custom Application Development model is used, 
-              when the client needs are well defined and client requires Global Solutions Tech to deliver solution or specific task 
-              at a fixed price as per the defined specification and agreed project path. 
-              As per agreement with client Global Solutions Tech can use combination of on-site,
-               off-site or off-shore teams to deliver solution on-time and on-budget as per the 
-               understanding and agreement with the client.
+            The Fixed Price Custom Application Development model is ideal when client requirements are clearly defined, and the client seeks a solution or specific task to be delivered at a fixed price based on the agreed specifications and project plan. Under this model, Global Solutions Tech utilizes a mix of on-site, off-site, or offshore teams, as per the agreement with the client, to ensure the solution is delivered on time and within budget, aligned with the agreed-upon terms.
             </p>
 </div>
          
@@ -94,11 +89,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Time and Material</h2>
             <p className="text-gray-800 leading-relaxed">
-              This model allows our clients to request Global Solutions Tech to provide 
-              IT professionals for the assignment where work allocation will be done by clients.
-               The pricing model is used when it is difficult to determine project
-                scope and make accurate estimates. Resources can be provided on-site, 
-                off-site or off-shore locations as per the client requirement.
+            This model enables clients to request IT professionals from Global Solutions Tech for assignments where work allocation is managed by the client. It is particularly suited for situations where project scope is unclear or accurate estimates are difficult to provide. Resources can be deployed on-site, off-site, or offshore, depending on the client’s needs.
             </p>
           </div>
         </div>
@@ -116,11 +107,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
 
 </h2>
             <p className="text-gray-800 leading-relaxed">
-              Business process outsourcing is a valuable strategy for client
-               to achieve high performance by controlling costs, reducing risk, 
-               and fostering collaboration. This is based upon philosophy to have 
-               client focus on its core competence, and let Global Solutions team manage 
-               the non-core business process.
+            Business Process Outsourcing (BPO) is a strategic approach that helps clients enhance performance by controlling costs, minimizing risks, and promoting collaboration. The philosophy behind this model is to allow clients to focus on their core competencies while entrusting Global Solutions Tech to manage non-core business processes.
             </p>
 </div>
          
@@ -150,12 +137,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Application Management Outsourcing</h2>
             <p className="text-gray-800 leading-relaxed">
-              Client can focus on creating new technology solution 
-              and let Global Solutions off-shore infrastructure team manage
-               and support your applications in production and test environment. 
-               To our clients it gives better value for each IT Dollar spent,
-                exposure to skilled global expertise and advantage of round-the-clock 
-                support because of the time zone difference.
+            Clients can focus on developing innovative technology solutions while Global Solutions Tech' offshore infrastructure team handles the management and support of your applications in both production and testing environments. This approach provides better value for each IT dollar spent, access to global expertise, and the benefit of 24/7 support due to time zone differences.
             </p>
           </div>
         </div>
@@ -173,9 +155,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
 
 </h2>
             <p className="text-gray-700 leading-relaxed">
-              The entire application/solution is developed and deployed
-               for a specific client, and then transfer the application 
-               management to the client after delivery.
+            The complete application or solution is developed and deployed for a specific client, with the responsibility for ongoing management transferred to the client upon successful delivery.
             </p>
 </div>
          
@@ -207,9 +187,7 @@ Our Specialization And Offerings, Can Help You To Get IT Solutions To Market Mor
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Off-Shore Delivery Center</h2>
             <p className="text-gray-800 leading-relaxed">
-              This model, Global Solutions Tech provides a client with a dedicated team or 
-              resources for a fixed period of time at a fixed cost. Client 
-              can use the team as they want and let Global Solutions take care of all the logistics.
+            In this model, Global Solutions Tech offers clients a dedicated team or set of resources for a specified period at a fixed cost. Clients have the flexibility to utilize the team as needed while Global Solutions handles all logistics and operations.
             </p>
           </div>
         </div>

@@ -22,8 +22,7 @@ function QualityPolicy() {
   <div className="text-center">
     <h1 className="text-4xl font-bold mt-8 mb-4">Quality Policy</h1>
     <p className="text-lg text-gray-800 leading-relaxed mb-6 max-w-5xl mx-auto"> 
-      We aspire to be early movers & create an environment for a dynamic customer 
-      insight in all transactions by constantly aligning our business strategies & capabilities.
+    We aim to be proactive leaders, fostering a dynamic environment that drives customer insights in every transaction by continuously aligning our business strategies and capabilities.
     </p>
   </div>
 
@@ -41,9 +40,7 @@ function QualityPolicy() {
       Global Solutions Tech's Quality Policy
   </h1>
     <p className="text-xl text-gray-800 leading-relaxed max-w-5xl mx-auto pb-8">
-      Global Solutions Tech  Values Are The Building Blocks Of Our Vibrant Global Work Culture.
-       Our Culture Has Developed From Our Quality Policy. 
-       It Inspires Our Behavior, Relationships, And Business Decisions.
+    At Global Solutions Tech, our core values drive our vibrant work culture. Built on our dedication to quality, these values influence everything from how we collaborate to the decisions we make.
     </p>
   </div>
 </section>
@@ -60,11 +57,7 @@ function QualityPolicy() {
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Trust and Integrity</h2>
             <p className="text-gray-800 leading-relaxed ">
-              We are in the business of intellectual capital related by humans
-               and their interaction with other humans. To operate successfully 
-               in such a dynamic environment, trust is a key element in everyday interactions. 
-               We believe that our business grows only as fast as our trust in one another expands. 
-               We honor our commitments and act with responsibility in all our relationships.
+            At the core of our business is the value of intellectual capital, driven by human connections. Trust is fundamental to navigating this dynamic space, and we believe our success grows with the trust we cultivate among ourselves. We remain committed to upholding our promises and acting responsibly in every relationship.
             </p>
           </div>
          
@@ -94,11 +87,7 @@ function QualityPolicy() {
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Commitment and Professionalism</h2>
             <p className="text-gray-800 leading-relaxed">
-              As a people's firm, we believe that it's our responsibility to act professionally. 
-              We deliver excellence by working together and demonstrate mutual respect.
-               We believe in dealing with issues with courage and integrity. 
-               We go beyond what we commit to deliver and pursue excellence in everything we do.
-                This is our commitment to the civilized way of doing business.
+            As a people-focused company, we uphold the highest standards of professionalism. We achieve excellence through collaboration, mutual respect, and addressing challenges with courage and integrity. We go beyond our commitments to deliver exceptional results, reflecting our dedication to ethical and principled business practices.
             </p>
           </div>
         </div>
@@ -116,11 +105,7 @@ function QualityPolicy() {
 
 </h2>
             <p className="text-gray-800 leading-relaxed">
-We take customer satisfaction very seriously and put all our efforts in fulfilling them. 
-We carry out this commitment by providing the highest level of value to our clients through exceptional, 
-responsive, and efficient delivery of services. We wouldn't be in business without them, 
-and we are in business for them and with them. 
-Serving them with the highest quality of solutions and resource offerings is a value very dear to us.
+            We place the utmost importance on customer satisfaction, dedicating ourselves to meeting their needs with the highest level of service. Our commitment is reflected in the exceptional, responsive, and efficient solutions we provide. Our business exists because of our clients, and we are driven to serve them with the highest-quality offerings and solutions.
             </p>
 </div>
          
@@ -150,10 +135,7 @@ Serving them with the highest quality of solutions and resource offerings is a v
           />
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Open Environment</h2>
             <p className="text-gray-800 leading-relaxed">
-             We listen, learn, and help selflessly in our interactions with others.
-              We embrace change, respect diverse viewpoints and are inclusive. 
-              We identify opportunities and proactively seek areas 
-              for improvement in processes and encourage diverse viewpoints.
+            We prioritize listening and learning in every interaction, embracing change and respecting diverse viewpoints. We actively look for ways to improve processes and encourage diverse input for innovation.
             </p>
           </div>
         </div>
@@ -170,11 +152,7 @@ Serving them with the highest quality of solutions and resource offerings is a v
             <h2 className="text-3xl font-bold mb-4 text-blue-900">Respect for Individuals
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              More than a lip service, this is probably the strongest value we adhere to.
-               And this comes straight from the heart of our organization.
-                No matter what this aspect will never be compromised, irrespective of the individual's belief system,
-                 gender, sexual orientation, race, religion and national origin. We believe that grown up human beings
-                  like to be treated as adults and are mature enough to be treated that way.
+            This value is not just something we speak about; it is the core principle we live by. It is deeply ingrained in our organization, and we stand by it unconditionally. Regardless of belief systems, gender, sexual orientation, race, religion, or national origin, this will never be compromised. We believe that all individuals deserve to be treated with the maturity and respect they deserve.
             </p>
           </div>
          

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import api from "../../api/axios.js";
+import DashboardNavbar from "../../components/DashboardNavbar.jsx";
+
 import {
   Upload,
   FileText,
@@ -59,6 +61,9 @@ export default function UserDashboard() {
   const lastFetchedTabRef = useRef(null);
   const isFetchingRef = useRef(false);
 
+
+
+ 
 
 
   // Get companyId and userId from stored userData
@@ -297,12 +302,16 @@ const toggleDocumentStatus = async (doc) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+          <DashboardNavbar />
+        
+
       <Sidebar
         sidebarOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         handleLogout={handleLogout}
+       /* mobileMenuOpen={mobileOpen}*/
         currentUser={currentUser}
       />
 

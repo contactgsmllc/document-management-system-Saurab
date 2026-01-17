@@ -13,7 +13,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-ARG VITE_API_URL=http://backend-service:8080
+ARG VITE_API_URL=http://localhost:8080
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build the app

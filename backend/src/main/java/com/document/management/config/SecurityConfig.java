@@ -23,6 +23,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import static org.springframework.http.HttpMethod.OPTIONS;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -30,21 +32,13 @@ public class SecurityConfig {
     @Value("${jwt.secret}")
     private String secret;
 
-    // you’ll probably inject JwtUtil + UserService here later
-    // private final JwtUtil jwtUtil;
-    // private final UserService userService;
-
-    // public SecurityConfig(JwtUtil jwtUtil, UserService userService) {
-    //     this.jwtUtil = jwtUtil;
-    //     this.userService = userService;
-    // }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/users/login",
                                 "/users/register",
@@ -57,37 +51,23 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/actuator/**"
                         ).permitAll()
-                        // OAuth2-related endpoints should be public
                         .requestMatchers(
                                 "/oauth2/**",
                                 "/login/oauth2/**"
                         ).permitAll()
-                        // admin-only APIs
                         .requestMatchers("/admin/**").hasAuthority("SUPER_ADMIN")
 
-                        // everything else needs authentication
                         .anyRequest().authenticated()
                 )
-                // still stateless – JWT is used after login / OAuth2
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-//                // 1) enable OAuth2 login (e.g. Google / GitHub / etc.)
-//                .oauth2Login(oauth2 -> oauth2
-//                                // after successful OAuth2 login, we will generate our JWT
-//                                .successHandler(oauth2AuthenticationSuccessHandler())
-//                        // you can also customize failure handler or login page if needed
-//                        // .failureHandler(...)
-//                )
-
-                // 2) keep your existing custom JWT filter for “normal” API calls
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // existing JWT filter
     @Bean
     public JwtFilter jwtFilter() {
         return new JwtFilter(secret);
@@ -103,19 +83,6 @@ public class SecurityConfig {
                                                 Authentication authentication)
                     throws IOException, ServletException {
 
-                // 1) Get the OAuth2 user (email, name, etc.)
-                //    Example:
-                //    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                //    String email = (String) oAuth2User.getAttributes().get("email");
-
-                // 2) Find or create a User in your DB based on that email
-                //    User user = userService.findOrCreateFromOAuth2(oAuth2User);
-
-                // 3) Generate JWT for that user using your existing JwtUtil
-                //    String token = jwtUtil.generateToken(user);
-
-                // 4) Return the token to frontend (for SPA/React)
-                // For now, just a placeholder JSON – you will replace this with real logic
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
 
@@ -136,7 +103,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOriginPatterns(List.of("https://api.gstechsystems.com", "http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

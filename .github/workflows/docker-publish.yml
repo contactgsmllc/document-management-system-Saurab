@@ -34,7 +34,7 @@ jobs:
         run: |
           docker buildx build --platform linux/arm64 \
             -t dearsrini/document-backend:latest \
-            # -t dearsrini/document-backend:${IMAGE_TAG} \
+            -t dearsrini/document-backend:${IMAGE_TAG} \
             --push ./backend
           # docker push dearsrini/document-backend:latest
           # docker push dearsrini/document-backend:${IMAGE_TAG}
@@ -43,7 +43,7 @@ jobs:
         run: |
           docker buildx build --platform linux/arm64 \
             -t dearsrini/document-frontend:latest \
-            # -t dearsrini/document-frontend:${IMAGE_TAG} \
+            -t dearsrini/document-frontend:${IMAGE_TAG} \
              --push -f frontend/Dockerfile frontend
           # docker push dearsrini/document-frontend:latest
           # docker push dearsrini/document-frontend:${IMAGE_TAG}

@@ -103,11 +103,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("https://api.gstechsystems.com", "http://localhost:5173"));
+        config.setAllowedOriginPatterns(List.of("https://gstechsystems.com", "https://api.gstechsystems.com", "http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

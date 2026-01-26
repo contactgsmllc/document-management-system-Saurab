@@ -13,7 +13,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-ARG VITE_API_URL=https://api.gstechsystems.com
+ARG VITE_API_URL=https://gstechsystems.com/api
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build the app

@@ -30,14 +30,14 @@ jobs:
           cd backend
           mvn clean package -DskipTests
 
-      - name: Build and push backend image
-        run: |
-          docker buildx build --platform linux/arm64 \
-            -t dearsrini/document-backend:latest \
-            -t dearsrini/document-backend:${IMAGE_TAG} \
-            --push ./backend
-          # docker push dearsrini/document-backend:latest
-          # docker push dearsrini/document-backend:${IMAGE_TAG}
+      # - name: Build and push backend image
+      #   run: |
+      #     docker buildx build --platform linux/arm64 \
+      #       -t dearsrini/document-backend:latest \
+      #       -t dearsrini/document-backend:${IMAGE_TAG} \
+      #       --push ./backend
+      #     # docker push dearsrini/document-backend:latest
+      #     # docker push dearsrini/document-backend:${IMAGE_TAG}
 
       - name: Build and push frontend image
         run: |

@@ -150,7 +150,7 @@ export default function Consulting() {
               <div className="space-y-5">
                 <div>
                   <p className="text-blue-100 text-sm mb-2">Call Us</p>
-                  <a href="tel:+15617642272" className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition">
+                  <a href="tel:+18603372116" className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition">
                   +1 (860)-337-2116
                   </a>
                 </div>

@@ -195,7 +195,7 @@ export default function Consulting() {
                 <div>
                   <p className="text-blue-100 text-sm mb-2">Call Us</p>
                   <a
-                    href="tel:+15617642272"
+                    href="tel:+18603372116"
                     className="text-lg sm:text-xl font-bold block hover:text-blue-200 transition"
                   >
                     +1 (860)-337-2116
@@ -204,7 +204,7 @@ export default function Consulting() {
                 <div>
                   <p className="text-blue-100 text-sm mb-2">Email Us</p>
                   <a
-                    href="mailto:info@ gstechsystems.com"
+                    href="mailto:info@gstechsystems.com"
                     className="text-sm sm:text-base hover:underline break-all"
                   >
                     info@gstechsystems.com

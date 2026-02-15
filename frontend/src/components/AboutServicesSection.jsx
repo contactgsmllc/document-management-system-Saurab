@@ -35,7 +35,7 @@ const AboutServicesSection = () => {
           </div>
 
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-            We are a trusted leader in custom applications and full-cycle IT solutions.
+            We are a trusted provider of custom applications and full-cycle IT solutions.
           </h2>
 
           <p className="text-gray-600 leading-relaxed text-lg">

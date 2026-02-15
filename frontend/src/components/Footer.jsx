@@ -122,7 +122,7 @@ export default function Footer() {
 
               <div className="space-y-2">
                 <p className="text-gray-600">
-                  <span className="text-blue-900 font-semibold">Phone:</span> +1 212-729-6543
+                  <span className="text-blue-900 font-semibold">Phone:</span> +1 860-337-2116
                 </p>
                 <p className="text-gray-600">
                   <span className="text-blue-900 font-semibold">Email:</span> info@gstechsystems.com

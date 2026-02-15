@@ -162,7 +162,7 @@ const Navbar = () => {
   />
 
   <h1 className="-m-6 p-0 text-white text-xl sm:text-2xl font-semibold font-serif">
-    Global Solutions
+    Global Solutions Tech
   </h1>
 </Link>
 

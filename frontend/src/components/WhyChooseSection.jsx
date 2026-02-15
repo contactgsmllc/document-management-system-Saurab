@@ -9,8 +9,8 @@ import {
 
 const items = [
   {
-    title: "Expertise",
-    desc: "Our team of experienced professionals brings deep expertise across a wide range of technologies and industries, guaranteeing the delivery of top-tier, reliable IT solutions.",
+    title: "Competence",
+    desc: "We leverage the latest advancements in cloud computing, AI, and automation to deliver forward-thinking solutions that create measurable business value.",
     icon: Briefcase,
   },
   {

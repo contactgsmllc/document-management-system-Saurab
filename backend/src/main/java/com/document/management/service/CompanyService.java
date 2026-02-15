@@ -1,12 +1,14 @@
 package com.document.management.service;
 
 import com.document.management.dto.CompanyResponse;
+import com.document.management.dto.CompanyUpdateRequest;
 import com.document.management.exception.ForbiddenException;
 import com.document.management.model.Company;
 import com.document.management.model.Status;
 import com.document.management.repository.CompanyRepository;
 import com.document.management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +69,17 @@ public class CompanyService {
         return companyRepo.save(company);
     }
 
+    @Transactional
+    public Company updateCompany(Long id, CompanyUpdateRequest req) {
+
+        Company company = companyRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        updateCompanyFields(company, req);
+
+        return company;
+    }
+
 
     @Transactional(readOnly = true)
     public CompanyResponse getCompany(Long id) {
@@ -90,5 +103,17 @@ public class CompanyService {
         return res;
     }
 
+    private void updateCompanyFields(Company company, CompanyUpdateRequest req) {
+
+        if (req.name() != null) company.setName(req.name());
+        if (req.address() != null) company.setAddress(req.address());
+        if (req.city() != null) company.setCity(req.city());
+        if (req.state() != null) company.setState(req.state());
+        if (req.contactPerson() != null) company.setContactPerson(req.contactPerson());
+        if (req.zipCode() != null) company.setZipCode(req.zipCode());
+        if (req.email() != null) company.setEmail(req.email());
+        if (req.phone() != null) company.setPhone(req.phone());
+        if (req.status() != null) company.setStatus(req.status());
+    }
 }
 

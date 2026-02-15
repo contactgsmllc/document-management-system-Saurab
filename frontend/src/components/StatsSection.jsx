@@ -59,7 +59,7 @@ const StatsSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full py-24 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50"
+      className="relative w-full overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-30">
@@ -77,7 +77,7 @@ const StatsSection = () => {
       }}></div>
 
       {/* Stats Grid */}
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative max-w-6xl mx-auto px-4 lg:px-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, idx) => (
             <div

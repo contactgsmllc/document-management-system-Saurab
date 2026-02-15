@@ -1,12 +1,17 @@
 import { Facebook, Linkedin, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
+const services = [
+  { name: "Consulting", path: "/services/consulting" },
+  { name: "Software Engineering", path: "/services/software-engineering" },
+  { name: "Cloud Solution", path: "/services/cloud-solution" },
+  { name: "Mobile Applications", path: "/services/mobile-applications" },
+];
 
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-gray-200 to-gray text-gray-700">
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-12">
-        
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-
           {/* Company Info */}
           <div>
             <h2 className="text-2xl font-bold text-blue-900 mb-4">
@@ -18,23 +23,32 @@ export default function Footer() {
 
             {/* Social Icons */}
             <div className="flex items-center gap-3 mt-6">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="group bg-blue-50 border border-blue-100 rounded-full p-3 hover:bg-blue-900 hover:border-blue-900 transition-all duration-300"
               >
-                <Linkedin className="text-blue-900 group-hover:text-white transition-colors" size={20} />
+                <Linkedin
+                  className="text-blue-900 group-hover:text-white transition-colors"
+                  size={20}
+                />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="group bg-blue-50 border border-blue-100 rounded-full p-3 hover:bg-blue-900 hover:border-blue-900 transition-all duration-300"
               >
-                <Twitter className="text-blue-900 group-hover:text-white transition-colors" size={20} />
+                <Twitter
+                  className="text-blue-900 group-hover:text-white transition-colors"
+                  size={20}
+                />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="group bg-blue-50 border border-blue-100 rounded-full p-3 hover:bg-blue-900 hover:border-blue-900 transition-all duration-300"
               >
-                <Facebook className="text-blue-900 group-hover:text-white transition-colors" size={20} />
+                <Facebook
+                  className="text-blue-900 group-hover:text-white transition-colors"
+                  size={20}
+                />
               </a>
             </div>
           </div>
@@ -48,30 +62,42 @@ export default function Footer() {
 
             <ul className="space-y-3">
               <li>
-                <a href="/about/overview" className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group">
+                <a
+                  href="/about/overview"
+                  className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group"
+                >
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   About Us
                 </a>
               </li>
               <li>
-                <a href="/contact-us" className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group">
+                <a
+                  href="/contact-us"
+                  className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group"
+                >
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="/signup" className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group">
+                <a
+                  href="/signup"
+                  className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group"
+                >
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   Join Us
                 </a>
               </li>
               <li>
-                <a href="/contact-us" className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group">
+                <a
+                  href="/contact-us"
+                  className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group"
+                >
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   Our Locations
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="#" className="text-gray-600 hover:text-blue-900 transition-colors duration-300 flex items-center gap-2 group">
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   Terms & Conditions
@@ -88,7 +114,7 @@ export default function Footer() {
                   <span className="w-0 h-px bg-blue-900 group-hover:w-4 transition-all duration-300"></span>
                   Sitemap
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -100,10 +126,16 @@ export default function Footer() {
             </h3>
 
             <ul className="space-y-3 text-gray-600">
-              <li className="hover:text-blue-900 transition-colors duration-300 cursor-pointer">Cloud Solution</li>
-              <li className="hover:text-blue-900 transition-colors duration-300 cursor-pointer">Consulting</li>
-              <li className="hover:text-blue-900 transition-colors duration-300 cursor-pointer">Mobile Applications</li>
-              <li className="hover:text-blue-900 transition-colors duration-300 cursor-pointer">Software Engineering</li>
+              {services.map((service) => (
+                <li
+                  key={service.name}
+                  className="transition-colors duration-300 hover:text-blue-900"
+                >
+                  <Link to={service.path} className="block cursor-pointer py-1">
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -116,16 +148,21 @@ export default function Footer() {
 
             <div className="space-y-4">
               <p className="text-gray-600 leading-relaxed">
-                PO Box 902, South Windsor<br />
+                PO Box 902, South Windsor
+                <br />
                 CT 06074 <br />
               </p>
 
               <div className="space-y-2">
                 <p className="text-gray-600">
                   <span className="text-blue-900 font-semibold">Phone:</span> +1 860-337-2116
+                  <span className="text-blue-900 font-semibold">Phone:</span> +1
+                  212-729-6543
                 </p>
                 <p className="text-gray-600">
-                  <span className="text-blue-900 font-semibold">Email:</span> info@gstechsystems.com
+                  <span className="text-blue-900 font-semibold">Email:</span>{" "}
+                  info@gstechsystems.com
+                  <span className="text-blue-900 font-semibold">Email:</span> info@gstechsystems.com, support@gstechsystems.com
                 </p>
               </div>
             </div>
@@ -138,7 +175,11 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="text-center text-gray-600 text-sm">
           © Copyright 2024
-          <span className="font-semibold text-gray-900"> Global Solutions Tech.</span> All Rights Reserved
+          <span className="font-semibold text-gray-900">
+            {" "}
+            Global Solutions Tech.
+          </span>{" "}
+          All Rights Reserved
         </div>
       </div>
     </footer>

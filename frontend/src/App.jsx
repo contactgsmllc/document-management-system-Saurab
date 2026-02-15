@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import ScrollToTop from "./ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route } from "react-router-dom";
@@ -35,6 +36,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <>
+     <ScrollToTop />
       <Routes>
         {/* Public pages with Layout */}
         <Route

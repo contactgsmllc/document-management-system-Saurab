@@ -10,6 +10,7 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
     password: "",
     confirmPassword: "",
     companyId: "",
+    roleId: "",
     firstName: "",
     middleName: "",
     lastName: "",
@@ -23,6 +24,7 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
       password: "",
       confirmPassword: "",
       companyId: user.company?.id || "",
+      roleId: user.role?.id || "",
       firstName: user.firstName || "",
       middleName: user.middleName || "",
       lastName: user.lastName || "",
@@ -32,6 +34,7 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
       email: "",
       password: "",
       confirmPassword: "",
+      roleId: "",
       companyId: "",
       firstName: "",
       middleName: "",
@@ -43,8 +46,16 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
 
 
   const [companies, setCompanies] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+
+
   const [loadingCompanies, setLoadingCompanies] = useState(false);
-  useEffect(() => {
+
+
+
+
+  /*useEffect(() => {
     if (!open) return;
 
     setLoadingCompanies(true);
@@ -52,49 +63,98 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
       .get("/users/companies/list")
       .then((res) => setCompanies(res.data))
       .finally(() => setLoadingCompanies(false));
+
+
+      setLoadingRoles(true);
+  api.get("/roles")
+    .then((res) => setRoles(res.data))
+    .finally(() => setLoadingRoles(false));
+
   }, [open]);
 
-  const handleSubmit = async () => {
-    if (!form.email || !form.companyId || !form.firstName || !form.lastName) {
-      return alert("Please fill all required fields");
+  */
+ useEffect(() => {
+  if (!open) return;
+
+  const fetchData = async () => {
+    try {
+      setLoadingCompanies(true);
+      const companiesRes = await api.get("/users/companies/list");
+      setCompanies(companiesRes.data);
+    } catch (err) {
+      console.error("Failed to fetch companies:", err);
+    } finally {
+      setLoadingCompanies(false);
     }
 
- // password required
- if (!isEdit && !form.password){
-  return alert("password is required");
- }
-// password match
- if (form.password && form.password !== form.confirmPassword) {
-    return alert("Passwords do not match");
-  }
     try {
-      if (isEdit) {
-        await api.put(`/admin/users/${user.id}`, {
-          email: form.email,
-          companyId: Number(form.companyId),
-          firstName: form.firstName,
-          middleName: form.middleName || null,
-          lastName: form.lastName,
-          ...(form.password && { password: form.password }),
-        });
-      } else {
-        await api.post(`/admin/users`, {
-          email: form.email,
-          password: form.password,
-          companyId: Number(form.companyId),
-          firstName: form.firstName,
-          middleName: form.middleName || null,
-          lastName: form.lastName,
-        });
-      }
-
-      onSuccess();
-      onClose();
-    } catch (error) {
-      const errorMessage = error?.response?.data?.message || "Failed to save user";
-      alert(errorMessage);
+      setLoadingRoles(true);
+      const rolesRes = await api.get("/admin/roles");
+      setRoles(rolesRes.data);
+    } catch (err) {
+      console.error("Failed to fetch roles:", err);
+    } finally {
+      setLoadingRoles(false);
     }
   };
+
+  fetchData();
+}, [open]);
+
+
+  const handleSubmit = async () => {
+  // required fields
+  if (!form.email || !form.companyId || !form.firstName || !form.lastName) {
+    return alert("Please fill all required fields");
+  }
+
+  // role required
+  if (!form.roleId) {
+    return alert("Role is required");
+  }
+
+  // password required for new user
+  if (!isEdit && !form.password) {
+    return alert("Password is required");
+  }
+
+  // password match
+  if (form.password && form.password !== form.confirmPassword) {
+    return alert("Passwords do not match");
+  }
+
+  try {
+    if (isEdit) {
+      // update existing user
+      await api.put(`/admin/users/${user.id}`, {
+        email: form.email,
+        companyId: Number(form.companyId),
+        roleId: Number(form.roleId),
+        firstName: form.firstName,
+        middleName: form.middleName || null,
+        lastName: form.lastName,
+        ...(form.password && { password: form.password }),
+      });
+    } else {
+      // create new user
+      await api.post(`/admin/users`, {
+        email: form.email,
+        password: form.password,
+        companyId: Number(form.companyId),
+        roleId: Number(form.roleId),
+        firstName: form.firstName,
+        middleName: form.middleName || null,
+        lastName: form.lastName,
+      });
+    }
+
+    onSuccess();
+    onClose();
+  } catch (error) {
+    const errorMessage = error?.response?.data?.message || "Failed to save user";
+    alert(errorMessage);
+  }
+};
 
   if (!open) return null;
 
@@ -258,7 +318,53 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
               </div>
             </div>
           </div>
+
+
+{/* Role */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Role *
+  </label>
+  <div className="relative">
+    {/* Icon */}
+    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+
+    {/* Select */}
+    <select
+      value={form.roleId}
+      onChange={(e) => setForm({ ...form, roleId: e.target.value })}
+      className="w-full pl-10 pr-8 py-3 border border-gray-300 rounded-lg
+                 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white appearance-none"
+    >
+      <option value="">Select role</option>
+      {roles.map((r) => (
+        <option key={r.id} value={r.id}>
+          {r.name}
+        </option>
+      ))}
+    </select>
+
+    {/* Custom arrow */}
+    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+      <svg
+        className="w-4 h-4 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
         </div>
+
+
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-gray-50 rounded-b-xl">
@@ -311,3 +417,5 @@ const UserModal = ({ open, onClose, user, onSuccess }) => {
 };
 
 export default UserModal;
+
+

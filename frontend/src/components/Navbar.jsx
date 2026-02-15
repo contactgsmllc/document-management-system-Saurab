@@ -137,20 +137,9 @@ const Navbar = () => {
       aria-label="Main navigation"
     >
       <div className="max-w-8xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
-        {/* Logo *
-        <Link 
-          to="/" 
-          className="text-xl sm:text-2xl font-bold z-50 font-sans hover:opacity-80 transition-opacity duration-200"
-          onClick={closeAllMenus}
-        >
-          Global Solutions Tech
-        </Link>*/}
+       
         {/*logo*/}
- 
-
-
-   
-<Link
+   <Link
   to="/"
   className="flex items-center leading-none z-50 hover:opacity-80 transition"
   onClick={closeAllMenus}

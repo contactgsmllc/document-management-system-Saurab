@@ -3,32 +3,32 @@ const services = [
   {
     title: "AI",
     img: "https://www.tanishasystems.com/assets/img/ai-generated-8531013_1280.jpg",
-    link: "/ai",
+    link: "/services",
   },
   {
     title: "Consulting",
     img: "https://www.tanishasystems.com/assets/img/businessman-4661727_1280.jpg",
-    link: "/consulting",
+    link: "/services/consulting",
   },
   {
     title: "SaaS",
     img: "https://www.tanishasystems.com/assets/img/saas.jpeg",
-    link: "/saas",
+    link: "/services/software-engineering",
   },
   {
     title: "E-commerce Solutions",
     img: "https://www.tanishasystems.com/assets/img/internet-of-things-7107054_1280.jpg",
-    link: "/iot",
+    link: "/services",
   },
   {
     title: "Custom Software",
     img: "https://www.tanishasystems.com/assets/img/cyber-security-1805632_1280.png",
-    link: "/cyber-security",
+    link: "/services",
   },
   {
     title: "Cloud Solutions",
     img: "https://www.tanishasystems.com/assets/img/cloud-computing-2001090_1280.jpg",
-    link: "/cloud-solution",
+    link: "/services/cloud-solution",
   },
 ];
 

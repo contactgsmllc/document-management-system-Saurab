@@ -11,7 +11,7 @@ public class UserResponse {
     private String email;
     private Role role;
     private Company company;
-    private boolean approved;    // ⭐ ADD THIS FIELD
+    private boolean approved;
     private Status status;
     private String firstName;
     private String middleName;

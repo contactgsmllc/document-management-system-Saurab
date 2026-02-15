@@ -24,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.document.management.model.Status.INACTIVE;
+
 @Service
 public class UserService {
 
@@ -101,6 +103,10 @@ public class UserService {
 
             if (!user.isApproved()) {
                 throw new ForbiddenException("User is not approved by admin yet");
+            }
+
+            if (INACTIVE.equals(user.getStatus())) {
+                throw new RuntimeException("User is not active");
             }
 
             if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
@@ -182,7 +188,7 @@ public class UserService {
         public void softDeleteUser (Long id){
             User user = userRepo.findById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            user.setStatus(Status.INACTIVE);
+            user.setStatus(INACTIVE);
             userRepo.save(user);
         }
         @Transactional

@@ -159,6 +159,12 @@ export default function Consulting() {
                   <a href="mailto:info@gstechsystems.com" className="text-sm sm:text-base hover:underline break-all">
                     info@gstechsystems.com
                   </a>
+                  <a
+                    href="mailto:support@gstechsystems.com"
+                    className="text-sm sm:text-base hover:underline break-all"
+                  >
+                    support@gstechsystems.com
+                  </a>
                 </div>
               </div>
             </div>

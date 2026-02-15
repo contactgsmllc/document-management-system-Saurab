@@ -53,11 +53,8 @@ public class UserAdminController {
         user.setMiddleName(req.getMiddleName());
         user.setLastName(req.getLastName());
 
-        // Assign role: since RegisterRequest no longer contains roleId,
-        // pick a sensible default role by name (try "USER" then "ROLE_USER"), otherwise fallback to any role.
-        Role role = roleRepo.findByName(RoleType.USER)
-                .orElseGet(() -> roleRepo.findAll().stream().findFirst()
-                        .orElseThrow(() -> new IllegalStateException("No roles configured in the system")));
+        Role role = roleRepo.findById(req.getRoleId())
+               .orElseThrow(() -> new IllegalStateException("No roles configured in the system"));
 
         user.setRole(role);
         user.setApproved(true);
@@ -71,10 +68,8 @@ public class UserAdminController {
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setCompany(companyRepo.findById(req.getCompanyId()).orElseThrow());
 
-        // same role logic as create: keep existing role if you want, or reassign default if your flow requires it.
-        Role role = roleRepo.findByName(RoleType.USER)
-                .orElseGet(() -> roleRepo.findAll().stream().findFirst()
-                        .orElseThrow(() -> new IllegalStateException("No roles configured in the system")));
+        Role role = roleRepo.findById(req.getRoleId())
+                .orElseThrow(() -> new IllegalStateException("No roles configured in the system"));
 
         user.setRole(role);
         return userRepo.save(user);

@@ -70,6 +70,8 @@ export default function UserDashboard() {
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const companyId = userData.companyId;
   const userId = userData.userId;
+ const companyName = currentUser?.company?.name || "Company";
+
 
   // Fetch current user details
   useEffect(() => {
@@ -110,7 +112,7 @@ export default function UserDashboard() {
         filename: doc.filename,
          size: doc.size,
          contentType: doc.contentType,
-        uploadedBy: doc.uploadedByUserId || doc.user || "Unknown",
+          uploadedBy: doc.uploadedBy || "Unknown",
           uploadedAt: doc.uploadedAt,
            status: doc.status, 
              }));
@@ -305,15 +307,19 @@ const toggleDocumentStatus = async (doc) => {
           <DashboardNavbar />
         
 
+    
+
       <Sidebar
-        sidebarOpen={sidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        handleLogout={handleLogout}
-       /* mobileMenuOpen={mobileOpen}*/
-        currentUser={currentUser}
-      />
+  sidebarOpen={sidebarOpen}
+  toggleSidebar={toggleSidebar}
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+  handleLogout={handleLogout}
+  currentUser={currentUser}
+
+  companyName={companyName}
+/>
+
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-64 transition-all duration-300">

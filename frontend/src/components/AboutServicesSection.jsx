@@ -45,7 +45,7 @@ const AboutServicesSection = () => {
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-1 h-6 bg-blue-900 rounded-full"></div>
-              <span className="text-xl font-bold text-gray-900">Our Mission</span>
+              <span className="text-xl font-bold text-gray-900">What Drives Us</span>
             </div>
             <p className="text-gray-600 leading-relaxed">
             Our mission is to empower businesses by harnessing the power of advanced technology, driving innovation, and delivering unmatched value through our full suite of IT services. We are committed to helping our clients stay competitive, improve operational efficiency, and sustain growth in the evolving digital landscape.

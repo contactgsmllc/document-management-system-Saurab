@@ -1,6 +1,7 @@
 package com.document.management.controller;
 
 import com.document.management.dto.CompanyResponse;
+import com.document.management.dto.CompanyUpdateRequest;
 import com.document.management.model.Company;
 import com.document.management.model.Status;
 import com.document.management.repository.CompanyRepository;
@@ -35,11 +36,13 @@ public class CompanyAdminController {
     }
 
     @PutMapping("/{id}")
-    public Company updateCompany(@PathVariable Long id, @RequestBody Company updated) {
-        Company company = companyRepo.findById(id).orElseThrow();
-        company.setName(updated.getName());
-        return companyRepo.save(company);
+    public Company updateCompany(
+            @PathVariable Long id,
+            @RequestBody CompanyUpdateRequest req) {
+
+        return companyService.updateCompany(id, req);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<CompanyResponse> getCompany(@PathVariable Long id) {
         return ResponseEntity.ok(companyService.getCompany(id));

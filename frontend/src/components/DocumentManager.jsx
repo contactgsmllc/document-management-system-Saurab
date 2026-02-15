@@ -224,25 +224,38 @@ export default function DocumentManager({ role, companyId, companies: companiesP
   };
 
   // Preview document
-  const previewDoc = async (doc) => {
-    if (!isPreviewSupported(doc.filename)) {
-      alert("Preview is only available for PDF and image files.");
-      return;
-    }
+ 
 
-    try {
-      const res = await api.get(
-        `/admin/companies/${selectedCompany}/documents/${doc.id}`,
-        { responseType: "blob" }
+const previewDoc = async (doc) => {
+  if (!isPreviewSupported(doc.filename)) {
+    alert("Preview is only available for PDF and image files.");
+    return;
+  }
+
+  try {
+    const res = await api.get(
+      `/admin/companies/${selectedCompany}/documents/${doc.id}`,
+      { responseType: "blob" }
+    );
+
+    const url = URL.createObjectURL(res.data);
+    setPreview({ url, name: doc.filename });
+  } catch (error) {
+    const status = error.response?.status;
+
+    if (status === 401 || status === 403) {
+      alert(
+        error.response?.data?.message ||
+        "You are not allowed to preview this document"
       );
-
-      const url = URL.createObjectURL(res.data);
-      setPreview({ url, name: doc.filename });
-    } catch (error) {
-      alert("Failed to preview document");
-      console.error("Preview document error:", error);
+      return; // ⛔ STOP here — do NOT logout
     }
-  };
+
+    alert("Failed to preview document");
+    console.error("Preview document error:", error);
+  }
+};
+
 
   // Download document
   const downloadDoc = async (doc) => {
@@ -455,7 +468,7 @@ export default function DocumentManager({ role, companyId, companies: companiesP
                     <td className="px-4 sm:px-6 py-4">
                       <div className="flex items-center gap-3">
                         <FileText
-                          className="text-blue-600 flex-shrink-0"
+                          className="text-blue-600 shrink-0"
                           size={20}
                         />
                         <div>
@@ -555,7 +568,7 @@ export default function DocumentManager({ role, companyId, companies: companiesP
       {preview && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-lg shadow-xl w-full h-full sm:w-[95vw] sm:h-[95vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex justify-between items-center shrink-0">
               <h3 className="text-base sm:text-lg font-semibold text-blue-900 truncate pr-4">
                 {preview.name}
               </h3>
@@ -564,7 +577,7 @@ export default function DocumentManager({ role, companyId, companies: companiesP
                   URL.revokeObjectURL(preview.url);
                   setPreview(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 p-1 hover:bg-gray-100 rounded"
+                className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 hover:bg-gray-100 rounded"
               >
                 <X size={24} />
               </button>

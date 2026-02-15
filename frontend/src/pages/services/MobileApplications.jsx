@@ -113,22 +113,22 @@ export default function Consulting() {
             {/* Why Choose Global Solutions */}
             <div className="mb-12 bg-gray-100 p-6 sm:p-8 rounded-lg shadow-md">
               <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-8 border-b-2 border-blue-900 pb-3">
-                Why Choose Global Solutions?
+              Why Choose Global Solutions Tech?
               </h2>
 
               <div className="space-y-6">
                 {[
                   {
-                    title: "Visionary Leadership",
-                    desc: "Our leadership team brings decades of combined experience in mobile app development and digital innovation, guiding our team to new heights of creativity and excellence.",
+                    title: "Global Perspective, Local Touch",
+                    desc: "We combine global expertise with an understanding of local business needs to create relevant and effective solutions.",
                   },
                   {
-                    title: "Creative Collaboration",
-                    desc: "We believe in the power of collaboration, working closely with our clients to turn their visions into reality and bring their ideas to life in ways they never thought possible.",
+                    title: "Innovation & Cutting-Edge Technology",
+                    desc: "We leverage the latest technologies, frameworks, and methodologies to deliver innovative, future-ready solutions.",
                   },
                   {
-                    title: "Lasting Impact",
-                    desc: "At Global Solutions, we don't just build mobile apps; we build legacies. We measure our success not by the number of downloads or five-star reviews but by the lasting impact our solutions have on our clients and their customers..",
+                    title: "Significant Outcome",
+                    desc: "We don’t just develop mobile apps at Global Solutions; we craft experiences that leave a lasting mark. True success is reflected in the value our solutions bring to clients and their users.",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start">
@@ -208,6 +208,12 @@ export default function Consulting() {
                     className="text-sm sm:text-base hover:underline break-all"
                   >
                     info@gstechsystems.com
+                  </a>
+                  <a
+                    href="mailto:support@gstechsystems.com"
+                    className="text-sm sm:text-base hover:underline break-all"
+                  >
+                    support@gstechsystems.com
                   </a>
                 </div>
               </div>

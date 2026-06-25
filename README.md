@@ -1,6 +1,6 @@
 # document-management-system
 
-# How to sync the code from the forked repository to the original repository
+#How to sync the code from the forked repository to the original repository
 
 Here r1 : https://github.com/Saurabh240/document-management-system.git
 and r2 : https://github.com/contactgsmllc/document-management-system-Saurab.git

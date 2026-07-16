@@ -41,7 +41,7 @@ jobs:
 
       - name: Build and push frontend image
         run: |
-          docker buildx build --platform linux/arm64 \
+          docker buildx build --platform linux/amd64,linux/arm64 \
             -t dearsrini/document-frontend:latest \
             -t dearsrini/document-frontend:${IMAGE_TAG} \
              --push -f frontend/Dockerfile frontend
